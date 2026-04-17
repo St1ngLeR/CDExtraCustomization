@@ -2,7 +2,6 @@
 
 #include <Windows.h>
 #include "injector/injector.hpp"
-#include "ini.h"
 #include "XMain.h"
 
 DWORD WINAPI MainTHREAD(LPVOID)

@@ -1,0 +1,990 @@
+CrashGUI-File                                         #
+backmain.tga      		                         # Background picture
+Extra Customization				                         # Title string
+open #none                # "blinds" background type
+default # default group
+default                # padding distance of elements to their parent frame (in pixels)
+default             # additional left/right padding of elements towards the center of their parent
+
+Next:		                                       #
+Type: GUIFrame	                                       # element type
+Name: frmNumPlateWindow
+Group: numplate
+Parent: default
+Style: frame_hud widescreen_aligncenter
+Text: default                                      # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 170		                                       # x coord
+Y: 180		                                       # y coord
+Width: 300	                                       # width ("default" for automatic)
+Height: 100                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                      # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: btnLastNumPlate                                       # element name
+Group: numplate
+Parent: default
+Style: button_left widescreen_aligncenter
+Text: default	                                       # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 196		                                       # x coord
+Y: 226		                                       # y coord
+Width: 15                                       # width ("default" for automatic)
+Height: 26                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: verybig				# font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: btnNextNumPlate                                       # element name
+Group: numplate
+Parent: default
+Style: button_right widescreen_aligncenter
+Text: default	                                       # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 444		                                       # x coord
+Y: 226		                                       # y coord
+Width: 15                                       # width ("default" for automatic)
+Height: 26                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: verybig				# font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picNumPlate                                       # element name
+Group: numplate
+Parent: default
+Style: widescreen_aligncenter
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 220		                                       # x coord
+Y: 200		                                       # y coord
+Width: 200	                                       # width ("default" for automatic)
+Height: 50                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: colwhite.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUILabel                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: lblNumPlatePage                                       # element name
+Group: numplate
+Parent: default
+Style: widescreen_aligncenter
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 320		                                       # x coord
+Y: 256		                                       # y coord
+Width: default	                                       # width ("default" for automatic)
+Height: default                                             # height ("default" for automatic)
+TextAlign: center                                       # text alignment (left, right, center, default)
+TextStyle: normalframed                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnSelectNumPlate
+Group: numplate
+Parent: default
+Style: button_accept
+Text: $ID intrface/editor.cgf btnAcceptTerrain.Caption		# screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnQuitNumPlate
+Group: numplate
+Parent: default
+Style: button_back
+Text: $ID gametext/general.txt BACK		# screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUILabel                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: lblNumPlateSelSubCap                                 # element name
+Group: numplate
+Parent: default
+Style: label_subcaption
+Text: $ID ExtraCustomization.Main SUBTITLENUMPLATE	# screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 400		                                       # x coord
+Y: -10		                                       # y coord
+Width: 200	                                       # width ("default" for automatic)
+Height: 100                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUILabel                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: lblGarageMainSubCap                                 # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup label_subcaption
+Text: temp_subtitle	# screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 400		                                       # x coord
+Y: -10		                                       # y coord
+Width: 200	                                       # width ("default" for automatic)
+Height: 100                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picCarLogo                                       # element name
+Group: default
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 0                                             # enabled? (0 or 1)
+X: 385#400		                                       # x coord
+Y: 0		                                       # y coord
+Width: 200	                                       # width ("default" for automatic)
+Height: 100                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: misc/colprev.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnListButton1 # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup button_smallselection
+Text: Temp1                   # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnListButton2 # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup button_smallselection valign_belowlast_fix
+Text: Temp2                   # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnListButton3 # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup button_smallselection valign_belowlast_fix
+Text: Temp2                   # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnListButton4 # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup button_smallselection valign_belowlast_fix
+Text: Temp2                   # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnListButton5 # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup button_smallselection valign_belowlast_fix
+Text: Temp2                   # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnListButton6 # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup button_smallselection valign_belowlast_fix
+Text: Temp2                   # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnListButton7 # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup button_smallselection valign_belowlast_fix
+Text: Temp2                   # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnListButton8 # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup button_smallselection valign_belowlast_fix
+Text: Temp2                   # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnListButton9 # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup button_smallselection valign_belowlast_fix
+Text: Temp2                   # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnListButton10 # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup button_smallselection valign_belowlast_fix
+Text: Temp2                   # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnListButton11 # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup button_smallselection valign_belowlast_fix
+Text: Temp2                   # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnListButton12 # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup button_smallselection valign_belowlast_fix
+Text: Temp2                   # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnListButton13 # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup button_smallselection valign_belowlast_fix
+Text: Temp2                   # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: btnLastCar                                       # element name
+Group: default
+Parent: default
+Style: button_left
+Text: default	                                       # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 15		                                       # x coord
+Y: 240		                                       # y coord
+Width: 15                                       # width ("default" for automatic)
+Height: 26                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: verybig				# font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: btnNextCar                                       # element name
+Group: default
+Parent: default
+Style: button_right
+Text: default	                                       # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 625		                                       # x coord
+Y:  240		                                       # y coord
+Width: 15                                       # width ("default" for automatic)
+Height: 26                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: verybig				# font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnGarageContinue # element name
+Group: default
+Parent: default
+Style: button_accept
+Text: $ID gametext/general.txt CONTINUE		# screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnGarageBack                              # element name
+Group: default
+Parent: default
+Style: button_back
+Text: $ID gametext/general.txt BACK # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 20		                                       # x coord
+Y: 440		                                       # y coord
+Width: 110	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnOpenCustomize                             # element name
+Group: default
+Parent: default
+Style: button_bottomspecial1
+Text: $ID gametext/garage2.txt OPENCUSTOMIZEBUTTON # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 20		                                       # x coord
+Y: 440		                                       # y coord
+Width: 110	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnOpenColorChoice                             # element name
+Group: default
+Parent: default
+Style: button_bottomspecial2
+Text: $ID gametext/garage2.txt SUBTITLECHOOSECOLOR # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 20		                                       # x coord
+Y: 440		                                       # y coord
+Width: 110	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnOpenCarSpecs                             # element name
+Group: default
+Parent: default
+Style: button_bottomspecial3
+Text: $ID gametext/garage2.txt OPENSPECSBUTTON # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 20		                                       # x coord
+Y: 440		                                       # y coord
+Width: 110	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUILabel                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: lblColorSelSubCap                                 # element name
+Group: colorsel
+Parent: default
+Style: label_subcaption
+Text: $ID gametext/garage2.txt SUBTITLECHOOSECOLOR	# screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 400		                                       # x coord
+Y: -10		                                       # y coord
+Width: 200	                                       # width ("default" for automatic)
+Height: 100                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnQuitColorChange # element name
+Group: colorsel
+Parent: default
+Style: button_back
+Text: $ID gametext/general.txt BACK   # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIFrame	                                       # element type
+Name: frmColorHolder # element name
+Group: colorsel
+Parent: default
+Style: frame_hud
+Text: default                                      # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 30		                                       # x coord
+Y: 100		                                       # y coord
+Width: 70	                                       # width ("default" for automatic)
+Height: 315                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColorMark                                     # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 0                                             # enabled? (0 or 1)
+X: 40		                                       # x coord
+Y: 110		                                       # y coord
+Width: 24	                                       # width ("default" for automatic)
+Height: 24                                              # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: colwhite.tga                                   # Bilddatei
+Rendermode: solid                                        #
+Alpha: 1.0                                             #
+
+Next:		                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColor1                                        # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 42		                                       # x coord
+Y: 112		                                       # y coord
+Width: 20	                                       # width ("default" for automatic)
+Height: 20                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: colwhite.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       		#
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColor2                                        # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 42		                                       # x coord
+Y: 137		                                       # y coord
+Width: 20	                                       # width ("default" for automatic)
+Height: 20                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: colwhite.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColor3                                        # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 42		                                       # x coord
+Y: 162		                                       # y coord
+Width: 20	                                       # width ("default" for automatic)
+Height: 20                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: colwhite.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColor4                                        # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 42		                                       # x coord
+Y: 187		                                       # y coord
+Width: 20	                                       # width ("default" for automatic)
+Height: 20                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: colwhite.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColor5                                        # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 42		                                       # x coord
+Y: 212		                                       # y coord
+Width: 20	                                       # width ("default" for automatic)
+Height: 20                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: colwhite.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColor6                                        # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 42		                                       # x coord
+Y: 237		                                       # y coord
+Width: 20	                                       # width ("default" for automatic)
+Height: 20                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: colwhite.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColor7                                        # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 67		                                       # x coord
+Y: 112		                                       # y coord
+Width: 20	                                       # width ("default" for automatic)
+Height: 20                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: colwhite.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColor8                                        # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 67		                                       # x coord
+Y: 137		                                       # y coord
+Width: 20	                                       # width ("default" for automatic)
+Height: 20                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: colwhite.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColor9                                        # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 67		                                       # x coord
+Y: 162		                                       # y coord
+Width: 20	                                       # width ("default" for automatic)
+Height: 20                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: colwhite.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColor10                                       # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 67		                                       # x coord
+Y: 187		                                       # y coord
+Width: 20	                                       # width ("default" for automatic)
+Height: 20                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: colwhite.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColor11                                       # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 67		                                       # x coord
+Y: 212		                                       # y coord
+Width: 20	                                       # width ("default" for automatic)
+Height: 20                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: colwhite.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColor12                                       # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 67		                                       # x coord
+Y: 237		                                       # y coord
+Width: 20	                                       # width ("default" for automatic)
+Height: 20                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: colwhite.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColorCustom                                   # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 42		                                       # x coord
+Y: 273		                                       # y coord
+Width: 45	                                       # width ("default" for automatic)
+Height: 20                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: colwhite.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColBar                                         # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 42		                                       # x coord
+Y: 298		                                       # y coord
+Width: 45	                                       # width ("default" for automatic)
+Height: 60                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: misc/colbar.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColSaturation                                    # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 42		                                       # x coord
+Y: 363		                                       # y coord
+Width: 45	                                       # width ("default" for automatic)
+Height: 40                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: misc/collumin.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColSatAlpha                                   # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 0                                             # enabled? (0 or 1)
+X: 42		                                       # x coord
+Y: 363		                                       # y coord
+Width: 45	                                       # width ("default" for automatic)
+Height: 40                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: misc/colsat.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next: 	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColBarMarker                                  # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 0                                             # enabled? (0 or 1)
+X: 39			                                       # x coord
+Y: 310		                                       # y coord
+Width: 51	                                       # width ("default" for automatic)
+Height: 10                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: misc/custom.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:	                                       #
+Type: GUIPicture                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: picColSatMarker                                  # element name
+Group: colorsel
+Parent: default
+Style: default
+Text: default                                          # screen caption ("default" for no text)
+Enabled: 0                                             # enabled? (0 or 1)
+X: 50		                                       # x coord
+Y: 380		                                       # y coord
+Width: 10	                                       # width ("default" for automatic)
+Height: 10                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: misc/custom2.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1.0                                             #
+
+Next:      	                                       #
+Type: GUIPicture	                                       # element type
+Name: picMinigunState                                  # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup
+Text: default                                   # screen caption ("default" for no text)
+Enabled: 0                                             # enabled? (0 or 1)
+X: 600		                                       # x coord
+Y: 285		                                       # y coord
+Width: 30	                                       # width ("default" for automatic)
+Height: 15                                        # height ("default" for automatic)
+TextAlign: left                                        # text alignment (left, right, center, default)
+TextStyle: normal                                      # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: misc/minigun1.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1                                             #
+
+Next:      	                                       #
+Type: GUIPicture	                                       # element type
+Name: picMissileState                                  # element name
+Group: default
+Parent: default
+Style: hidedefaultgroup
+Text: default                                   # screen caption ("default" for no text)
+Enabled: 0                                             # enabled? (0 or 1)
+X: 600		                                       # x coord
+Y: 325		                                       # y coord
+Width: 30	                                       # width ("default" for automatic)
+Height: 30                                        # height ("default" for automatic)
+TextAlign: left                                        # text alignment (left, right, center, default)
+TextStyle: normal                                      # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+Picture: misc/missile0.tga                                   # Bilddatei
+Rendermode: solid                                      #
+Alpha: 1                                             #
+
+Next:		                                       #
+Type: GUILabel                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: lblCarSpecsSubCap                                 # element name
+Group: carspecs
+Parent: default
+Style: label_subcaption
+Text: $ID gametext/garage2.txt SUBTITLESCARSPECS # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 400		                                       # x coord
+Y: -10		                                       # y coord
+Width: 200	                                       # width ("default" for automatic)
+Height: 100                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnQuitCarSpecs # element name
+Group: carspecs
+Parent: default
+Style: button_back
+Text: $ID gametext/general.txt CLOSE                                  # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIFrame	                                       # element type
+Name: frmSpecsWindow # element name
+Group: carspecs
+Parent: default
+Style: frame_hud
+Text: default                                      # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 170		                                       # x coord
+Y: 140		                                       # y coord
+Width: 300	                                       # width ("default" for automatic)
+Height: 215                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+

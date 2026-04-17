@@ -60,28 +60,32 @@ void XDynParts()
 				float bb_x = injector::ReadMemory<float>(cursubmesh + 0x28);
 				float pos_y = injector::ReadMemory<float>(cursubmesh + 0x38);
 				float springload = (GetPlayerParam<float>(CDPlayer::SpringLoadFR, player - 1));
-				injector::WriteMemory(cursubmesh + 0x44, ((springload * -1) / bb_x) + (bb_x * 2));
+				float whl_y = GetPlayerParam<float>(CDPlayer::WheelFRPosY, player - 1);
+				injector::WriteMemory(cursubmesh + 0x44, ((springload * -1) / bb_x) + (whl_y * -1));
 			}
 			else if (cursubmesh_name.contains("axlefl"))
 			{
 				float bb_x = injector::ReadMemory<float>(cursubmesh + 0x28);
 				float pos_y = injector::ReadMemory<float>(cursubmesh + 0x38);
 				float springload = (GetPlayerParam<float>(CDPlayer::SpringLoadFL, player - 1));
-				injector::WriteMemory(cursubmesh + 0x44, (((springload * -1) / bb_x) + (bb_x * 2)) * -1);
+				float whl_y = GetPlayerParam<float>(CDPlayer::WheelFLPosY, player - 1);
+				injector::WriteMemory(cursubmesh + 0x44, (((springload * -1) / bb_x) + (whl_y * -1)) * -1);
 			}
 			else if (cursubmesh_name.contains("axlerr"))
 			{
 				float bb_x = injector::ReadMemory<float>(cursubmesh + 0x28);
 				float pos_y = injector::ReadMemory<float>(cursubmesh + 0x38);
 				float springload = (GetPlayerParam<float>(CDPlayer::SpringLoadRR, player - 1));
-				injector::WriteMemory(cursubmesh + 0x44, ((springload * -1) / bb_x) + (bb_x * 2));
+				float whl_y = GetPlayerParam<float>(CDPlayer::WheelRRPosY, player - 1);
+				injector::WriteMemory(cursubmesh + 0x44, ((springload * -1) / bb_x) + (whl_y * -1));
 			}
 			else if (cursubmesh_name.contains("axlerl"))
 			{
 				float bb_x = injector::ReadMemory<float>(cursubmesh + 0x28);
 				float pos_y = injector::ReadMemory<float>(cursubmesh + 0x38);
 				float springload = (GetPlayerParam<float>(CDPlayer::SpringLoadRL, player - 1));
-				injector::WriteMemory(cursubmesh + 0x44, (((springload * -1) / bb_x) + (bb_x * 2)) * -1);
+				float whl_y = GetPlayerParam<float>(CDPlayer::WheelRLPosY, player - 1);
+				injector::WriteMemory(cursubmesh + 0x44, (((springload * -1) / bb_x) + (whl_y * -1)) * -1);
 			}
 
 			if (cursubmesh_name.contains("axlefl") || cursubmesh_name.contains("axlerl"))

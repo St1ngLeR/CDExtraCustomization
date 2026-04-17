@@ -1,0 +1,18 @@
+# ASI-plugin - Extra Customization
+# ---------------------------------------------------------------------------------
+
+Language: rus	# eng, rus, ger
+LanguageName: Русский	# English, Русский, Deutsch
+Sections: 1
+
+#-------------------------------------------------------------------------------------
+SECTION: ExtraCustomization.Main
+Keys: 2
+
+ID   NUMPLATE
+DESC
+TEXT Номерной знак
+
+ID   SUBTITLENUMPLATE
+DESC
+TEXT Номерной знак

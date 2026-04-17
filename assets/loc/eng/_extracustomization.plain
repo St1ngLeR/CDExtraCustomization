@@ -1,0 +1,18 @@
+# ASI-plugin - Extra Customization
+# ---------------------------------------------------------------------------------
+
+Language: eng	# eng, rus, ger
+LanguageName: English	# English, Русский, Deutsch
+Sections: 1
+
+#-------------------------------------------------------------------------------------
+SECTION: ExtraCustomization.Main
+Keys: 2
+
+ID   NUMPLATE
+DESC
+TEXT License Plate
+
+ID   SUBTITLENUMPLATE
+DESC
+TEXT Choose License Plate
