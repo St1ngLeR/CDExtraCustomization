@@ -13,10 +13,10 @@ void __declspec(naked) WheelsSize()
 		call ReadTextLine
 		call sub_696137
 		mov eax, [esp+0x36C]
-		fstp dword ptr [eax+0x40] 
-		cmp dword ptr [eax+0x40], 0  
+		fstp dword ptr [eax+0x80] 
+		cmp dword ptr [eax+0x80], 0  
 		je use_alternative      
-		fld dword ptr [eax+0x40]   
+		fld dword ptr [eax+0x80]   
 		jmp store_value
 		
 	use_alternative:
@@ -57,7 +57,7 @@ void __declspec(naked) WheelsSizeValDupl()
 	{
 		fstp st(1)
 		fst dword ptr[eax + 0x08]	// front wheels
-		fst dword ptr[eax + 0x40]	// rear wheels (duplicating for using it as a fallback if rear wheels size = 0)
+		fst dword ptr[eax + 0x80]	// rear wheels (duplicating for using it as a fallback if rear wheels size = 0)
 		jmp loc_47EA9D
 
 	loc_47EA9D:

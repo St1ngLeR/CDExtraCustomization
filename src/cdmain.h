@@ -16,6 +16,7 @@ DWORD p_CDControl = 0x78D5F4;
 DWORD p_CDNetwork = 0x7CD0E0;
 DWORD p_CrashGUI = 0x78D65C;
 DWORD p_Curr3DModel = 0x7961F8;
+DWORD p_LoadingNewModelRequired = 0x796200;
 
 float old_car_timer;
 
@@ -94,6 +95,11 @@ enum class CDMinigun
 
 enum class CDWheel
 {
+	Radius = 0x483C,
+	Diameter = 0x4840,
+	WidthF = 0x4848,
+	WidthR = 0x484C,
+	CalcWidth = 0x4854,
 	Health = 0x4B50,
 	SurfaceType = 0x4B2C,
 	LatForce = 0x4860,
@@ -620,6 +626,16 @@ bool IsRaceEndComing()	// works only for host :(
 DWORD Curr3DModel()
 {
 	return injector::ReadMemory<DWORD>(p_Curr3DModel);
+}
+
+bool LoadingNewModelRequired()
+{
+	return injector::ReadMemory<DWORD>(p_LoadingNewModelRequired);
+}
+
+bool CarCurrentlyLoaded()
+{
+	return injector::ReadMemory<DWORD>(injector::ReadMemory<DWORD>(0x7BC998) + 0x1C) != 0;
 }
 
 DWORD CDRace()

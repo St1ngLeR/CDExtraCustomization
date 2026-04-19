@@ -70,6 +70,30 @@
 
 namespace injector
 {
+    // Безопасное копирование памяти с перехватом исключений
+    inline bool SafeMemcpy(void* dst, const void* src, size_t size) noexcept
+    {
+        __try {
+            memcpy(dst, src, size);
+            return true;
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER) {
+            return false;
+        }
+    }
+
+    // Безопасное заполнение памяти с перехватом исключений
+    inline bool SafeMemset(void* dst, uint8_t value, size_t size) noexcept
+    {
+        __try {
+            memset(dst, value, size);
+            return true;
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER) {
+            return false;
+        }
+    }
+
     /*
      *   valid_pointer_type
      *       Concept to check if T is either a pointer or an integer that fits in a pointer
@@ -323,7 +347,7 @@ namespace injector
 
      // Helper: Check if a single page is accessible for desired access.
      // desired_access can be PAGE_READONLY, PAGE_READWRITE, etc.
-    static bool IsPageAccessible(void* addr, DWORD desired_access)
+    /*static bool IsPageAccessible(void* addr, DWORD desired_access)
     {
         MEMORY_BASIC_INFORMATION mbi;
         if (VirtualQuery(addr, &mbi, sizeof(mbi)) == 0)
@@ -334,6 +358,35 @@ namespace injector
         if (desired_access & PAGE_READONLY)
             return (protect & (PAGE_READONLY | PAGE_READWRITE | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE)) != 0;
         return true;
+    }*/
+
+    static bool IsPageAccessible(void* addr, DWORD desired_access)
+    {
+        if (!addr) return false;
+        // Быстрая защита от заведомо невалидных адресов
+        if ((uintptr_t)addr < 0x10000) return false;
+
+        MEMORY_BASIC_INFORMATION mbi;
+        if (VirtualQuery(addr, &mbi, sizeof(mbi)) == 0)
+            return false;
+
+        if (mbi.State != MEM_COMMIT)   // страница должна быть зафиксирована
+            return false;
+
+        DWORD protect = mbi.Protect;
+        // Запрещаем доступ к страницам с GUARD или NOACCESS
+        if (protect & (PAGE_GUARD | PAGE_NOACCESS))
+            return false;
+
+        if (desired_access & PAGE_READWRITE)
+        {
+            return (protect & (PAGE_READWRITE | PAGE_WRITECOPY | PAGE_EXECUTE_READWRITE)) != 0;
+        }
+        if (desired_access & PAGE_READONLY)
+        {
+            return (protect & (PAGE_READONLY | PAGE_READWRITE | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE)) != 0;
+        }
+        return false;
     }
 
     // Check if a whole range is accessible for desired access.
@@ -428,7 +481,7 @@ namespace injector
      *      Does memory unprotection if @vp is true.
      *      Returns true if write succeeded, false if memory not accessible.
      */
-    inline bool WriteMemoryRaw(memory_pointer_tr addr, void* value, size_t size, bool vp)
+    /*inline bool WriteMemoryRaw(memory_pointer_tr addr, void* value, size_t size, bool vp)
     {
         if (size == 0)
             return true;
@@ -452,6 +505,38 @@ namespace injector
 
         memcpy(addr.get(), value, size);
         return true;
+    }*/
+    inline bool WriteMemoryRaw(memory_pointer_tr addr, void* value, size_t size, bool vp)
+    {
+        if (size == 0)
+            return true;
+
+        void* ptr = addr.get();
+        if (!ptr)
+        {
+            LogMemoryError("WriteMemoryRaw (null pointer)", addr, size);
+            return false;
+        }
+
+        bool accessible = false;
+        scoped_unprotect xprotect(addr, vp ? size : 0);
+        if (vp)
+            accessible = xprotect.is_ok();
+        else
+            accessible = IsRangeAccessible(addr, size, PAGE_READWRITE);
+
+        if (!accessible)
+        {
+            LogMemoryError("WriteMemoryRaw (access denied)", addr, size);
+            return false;
+        }
+
+        if (!SafeMemcpy(ptr, value, size))
+        {
+            LogMemoryError("WriteMemoryRaw (exception)", addr, size);
+            return false;
+        }
+        return true;
     }
 
     /*
@@ -460,7 +545,7 @@ namespace injector
      *      Does memory unprotection if @vp is true
      *      Returns true if read succeeded, false if memory not accessible.
      */
-    inline bool ReadMemoryRaw(memory_pointer_tr addr, void* ret, size_t size, bool vp)
+    /*inline bool ReadMemoryRaw(memory_pointer_tr addr, void* ret, size_t size, bool vp)
     {
         if (size == 0)
             return true;
@@ -484,6 +569,38 @@ namespace injector
 
         memcpy(ret, addr.get(), size);
         return true;
+    }*/
+    inline bool ReadMemoryRaw(memory_pointer_tr addr, void* ret, size_t size, bool vp)
+    {
+        if (size == 0)
+            return true;
+
+        void* ptr = addr.get();
+        if (!ptr)
+        {
+            LogMemoryError("ReadMemoryRaw (null pointer)", addr, size);
+            return false;
+        }
+
+        bool accessible = false;
+        scoped_unprotect xprotect(addr, vp ? size : 0);
+        if (vp)
+            accessible = xprotect.is_ok();
+        else
+            accessible = IsRangeAccessible(addr, size, PAGE_READONLY);
+
+        if (!accessible)
+        {
+            LogMemoryError("ReadMemoryRaw (access denied)", addr, size);
+            return false;
+        }
+
+        if (!SafeMemcpy(ret, ptr, size))
+        {
+            LogMemoryError("ReadMemoryRaw (exception)", addr, size);
+            return false;
+        }
+        return true;
     }
 
     /*
@@ -492,7 +609,7 @@ namespace injector
      *      Does memory unprotection if @vp is true
      *      Returns true if fill succeeded, false if memory not accessible.
      */
-    inline bool MemoryFill(memory_pointer_tr addr, uint8_t value, size_t size, bool vp)
+    /*inline bool MemoryFill(memory_pointer_tr addr, uint8_t value, size_t size, bool vp)
     {
         if (size == 0)
             return true;
@@ -515,6 +632,38 @@ namespace injector
         }
 
         memset(addr.get(), value, size);
+        return true;
+    }*/
+    inline bool MemoryFill(memory_pointer_tr addr, uint8_t value, size_t size, bool vp)
+    {
+        if (size == 0)
+            return true;
+
+        void* ptr = addr.get();
+        if (!ptr)
+        {
+            LogMemoryError("MemoryFill (null pointer)", addr, size);
+            return false;
+        }
+
+        bool accessible = false;
+        scoped_unprotect xprotect(addr, vp ? size : 0);
+        if (vp)
+            accessible = xprotect.is_ok();
+        else
+            accessible = IsRangeAccessible(addr, size, PAGE_READWRITE);
+
+        if (!accessible)
+        {
+            LogMemoryError("MemoryFill (access denied)", addr, size);
+            return false;
+        }
+
+        if (!SafeMemset(ptr, value, size))
+        {
+            LogMemoryError("MemoryFill (exception)", addr, size);
+            return false;
+        }
         return true;
     }
 
