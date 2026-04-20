@@ -12,6 +12,7 @@
 #include "XCustom/XWheels.h"
 #include "XCustom/XDynParts.h"
 #include "XCustom/XCarinfo.h"
+#include "XCustom/XEntitiesList.h"
 
 using namespace std::chrono_literals;
 
@@ -31,5 +32,6 @@ void Init()
 		XWheels();
 		XDynParts();
 		XCarinfo();
+		XEntriesList();
 	}
 }

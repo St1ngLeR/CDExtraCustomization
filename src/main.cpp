@@ -6,6 +6,9 @@
 
 DWORD WINAPI MainTHREAD(LPVOID)
 {
+	//AllocConsole();
+	//freopen("CONOUT$", "w", stdout);
+
 	Init();
 	return 0;
 }
