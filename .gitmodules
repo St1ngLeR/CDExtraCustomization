@@ -1,3 +1,6 @@
 [submodule "src/injector"]
 	path = src/injector
 	url = https://github.com/St1ngLeR/injector.git
+[submodule "src/SDK"]
+	path = src/SDK
+	url = https://github.com/St1ngLeR/CrashdaySDK.git
