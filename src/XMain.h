@@ -26,6 +26,18 @@ void Init()
 	//AllocConsole();
 	//freopen("CONOUT$", "w", stdout);
 
+	injector::WriteMemory<int>(0x536386, 0x9D0, true);
+	injector::WriteMemory<int>(0x537BB0, 0x9D0, true);
+
+	WriteString<uint32_t>(0x6C94D6, gui_garage2.c_str(), true);
+	WriteString<uint32_t>(0x6C94E2, gui_garage2.c_str(), true);
+	WriteString<uint32_t>(0x6D6956, gui_garage2.c_str(), true);
+	WriteString<uint32_t>(0x6D6A7E, gui_garage2.c_str(), true);
+	WriteString<uint32_t>(0x6DDD1F, gui_garage2.c_str(), true);
+	WriteString<uint32_t>(0x6DDD34, gui_garage2.c_str(), true);
+	WriteString<uint32_t>(0x6DE653, gui_garage2.c_str(), true);
+	WriteString<uint32_t>(0x6DE739, gui_garage2.c_str(), true);
+
 	while (g_running.load(std::memory_order_relaxed))
 	{
 		XNumPlate();

@@ -117,31 +117,33 @@ void __declspec(naked) a_BtnUpDownElemsDeclr()
 	
 		mov ebx, -1
 		mov edx, dword ptr [btnListUp_Name]
-		lea eax, [esp + 0x510]
+		lea eax, [esp + 0x8B0]
 		call sub_69586C
 		mov edx, eax
 		mov eax, ecx
 		call sub_49B170
 		mov ds: [btnListUp_Ptr], eax
 		xor edx, edx
-		lea eax, [esp + 0x510]
+		lea eax, [esp + 0x8B0]
+		call sub_6959C9
 			
 		mov ebx, -1
 		mov edx, dword ptr [btnListDown_Name]
-		lea eax, [esp + 0x520]
+		lea eax, [esp + 0x8D0]
 		call sub_69586C
 		mov edx, eax
 		mov eax, ecx
 		call sub_49B170
 		mov ds: [btnListDown_Ptr], eax
 		xor edx, edx
-		lea eax, [esp + 0x520]
+		lea eax, [esp + 0x8D0]
+		call sub_6959C9
 			
 		// assigning the functions to the UI elements
 
 		mov ebx, -1
 		mov edx, dword ptr [btnListUp_Name]
-		lea eax, [esp + 0x530]
+		lea eax, [esp + 0x8F0]
 		call sub_69586C
 		mov ebx, btnListUp_Func
 		mov edx, eax
@@ -149,11 +151,12 @@ void __declspec(naked) a_BtnUpDownElemsDeclr()
 		call sub_4A0410
 		mov ds: [btnListUp_Ptr], eax
 		xor edx, edx
-		lea eax, [esp + 0x530]
+		lea eax, [esp + 0x8F0]
+		call sub_6959C9
 		
 		mov ebx, -1
 		mov edx, dword ptr [btnListDown_Name]
-		lea eax, [esp + 0x540]
+		lea eax, [esp + 0x920]
 		call sub_69586C
 		mov ebx, btnListDown_Func
 		mov edx, eax
@@ -161,9 +164,9 @@ void __declspec(naked) a_BtnUpDownElemsDeclr()
 		call sub_4A0410
 		mov ds: [btnListDown_Ptr], eax
 		xor edx, edx
-		lea eax, [esp + 0x540]
-	
+		lea eax, [esp + 0x920]
 		call sub_6959C9
+
 		jmp loc_537681
 
 	btnListDown_Func:
@@ -347,20 +350,8 @@ std::string GetCarTuningPageName(int index)
 	}
 }
 
-void XEntriesList()
+void EntriesList_MainFunc()
 {
-	page_name.reserve(128);
-
-	injector::MakeJMP(0x530463, a_EntriesList);
-	injector::MakeJMP(0x53049C, a_EntriesList2);
-	injector::MakeJMP(0x5304CB, a_EntriesList3);
-
-	injector::MakeJMP(0x530A43, a_GetPartsCount);
-	injector::MakeJMP(0x53767C, a_BtnUpDownElemsDeclr);
-
-	injector::MakeJMP(0x5308FA, a_PageCheck);
-	injector::MakeJMP(0x52FE27, a_PageCheck2);
-
 	if (injector::ReadMemory<int>(0x78ED10) == 0)
 	{
 		has_stock = true;
@@ -419,4 +410,37 @@ void XEntriesList()
 			injector::WriteMemory<BYTE>(btnListDown_Ptr + 0x55, false);
 		}
 	}
+}
+
+void __declspec(naked) a_EntriesList_MainFunc()
+{
+	__asm
+	{
+		call EntriesList_MainFunc
+
+		cmp dword ptr ds: [0x7CD0E0], 0
+
+		jmp loc_537D8C
+
+	loc_537D8C:
+		push 0x537D8C
+		retn
+	}
+}
+
+void XEntriesList()
+{
+	page_name.reserve(128);
+
+	injector::MakeJMP(0x530463, a_EntriesList);
+	injector::MakeJMP(0x53049C, a_EntriesList2);
+	injector::MakeJMP(0x5304CB, a_EntriesList3);
+
+	injector::MakeJMP(0x530A43, a_GetPartsCount);
+	injector::MakeJMP(0x53767C, a_BtnUpDownElemsDeclr);
+
+	injector::MakeJMP(0x5308FA, a_PageCheck);
+	injector::MakeJMP(0x52FE27, a_PageCheck2);
+
+	injector::MakeJMP(0x537D85, a_EntriesList_MainFunc);	// we do a little trolling
 }

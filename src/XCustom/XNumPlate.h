@@ -57,12 +57,14 @@ bool is_texture_loaded;
 std::string numplate_tex;
 std::string numplate_tex2;
 
-int find_index(const std::vector<std::string>& vec, const std::string& value) {
+int find_index(const std::vector<std::string>& vec, const std::string& value)
+{
 	auto it = std::find(vec.begin(), vec.end(), value);
-	if (it != vec.end()) {
+	if (it != vec.end())
+	{
 		return std::distance(vec.begin(), it);
 	}
-	return -1;
+	return 0;
 }
 
 void CDWriteString(int addr, std::string str)
@@ -336,6 +338,8 @@ void NumPlateSelect(int index)
 		numplate_tex = sel_numplates_u[index].data();
 	}
 
+	std::ranges::replace(numplate_tex, '\\', '/');
+
 	if ((numplate_tex != "l_def.tga") && (numplate_tex != "s_def.tga") && (numplate_tex != "u_def.tga"))
 	{
 		numplate_tex2 = "numplate/" + numplate_tex;
@@ -398,75 +402,81 @@ void __declspec(naked) NumPlateElemsDeclr()
 
 		mov ebx, -1
 		mov edx, dword ptr [btnQuitNumPlate_Name]
-		lea eax, [esp + 0x460]
+		lea eax, [esp + 0x700]
 		call sub_69586C
 		mov edx, eax
 		mov eax, ecx
 		call sub_49B170
 		mov ds: [btnQuitNumPlate_Ptr], eax
 		xor edx, edx
-		lea eax, [esp + 0x460]
+		lea eax, [esp + 0x700]
+		call sub_6959C9
 
 		mov ebx, -1
 		mov edx, dword ptr [lblNumPlatePage_Name]
-		lea eax, [esp + 0x480]
+		lea eax, [esp + 0x720]
 		call sub_69586C
 		mov edx, eax
 		mov eax, ecx
 		call sub_49B170
 		mov ds: [lblNumPlatePage_Ptr], eax
 		xor edx, edx
-		lea eax, [esp + 0x480]
+		lea eax, [esp + 0x720]
+		call sub_6959C9
 			
 		mov ebx, -1
 		mov edx, dword ptr [picNumPlate_Name]
-		lea eax, [esp + 0x490]
+		lea eax, [esp + 0x740]
 		call sub_69586C
 		mov edx, eax
 		mov eax, ecx
 		call sub_49B170
 		mov ds: [picNumPlate_Ptr], eax
 		xor edx, edx
-		lea eax, [esp + 0x490]
-						
+		lea eax, [esp + 0x740]
+		call sub_6959C9
+
 		mov ebx, -1
 		mov edx, dword ptr [btnLastNumPlate_Name]
-		lea eax, [esp + 0x4B0]
+		lea eax, [esp + 0x760]
 		call sub_69586C
 		mov edx, eax
 		mov eax, ecx
 		call sub_49B170
 		mov ds: [btnLastNumPlate_Ptr], eax
 		xor edx, edx
-		lea eax, [esp + 0x4B0]
+		lea eax, [esp + 0x760]
+		call sub_6959C9
 			
 		mov ebx, -1
 		mov edx, dword ptr [btnNextNumPlate_Name]
-		lea eax, [esp + 0x4C0]
+		lea eax, [esp + 0x780]
 		call sub_69586C
 		mov edx, eax
 		mov eax, ecx
 		call sub_49B170
 		mov ds: [btnNextNumPlate_Ptr], eax
 		xor edx, edx
-		lea eax, [esp + 0x4C0]
+		lea eax, [esp + 0x780]
+		call sub_6959C9
 			
 		mov ebx, -1
 		mov edx, dword ptr [btnSelectNumPlate_Name]
-		lea eax, [esp + 0x4F0]
+		lea eax, [esp + 0x7A0]
 		call sub_69586C
 		mov edx, eax
 		mov eax, ecx
 		call sub_49B170
 		mov ds: [btnSelectNumPlate_Ptr], eax
 		xor edx, edx
-		lea eax, [esp + 0x4F0]
+		lea eax, [esp + 0x7A0]
+		call sub_6959C9
 
 		// assigning the functions to the UI elements
 
 		mov ebx, -1
 		mov edx, dword ptr [btnQuitNumPlate_Name]
-		lea eax, [esp + 0x470]
+		lea eax, [esp + 0x7C0]
 		call sub_69586C
 		mov ebx, btnQuitNumPlate_Func
 		mov edx, eax
@@ -474,11 +484,12 @@ void __declspec(naked) NumPlateElemsDeclr()
 		call sub_4A0410
 		mov ds: [btnQuitNumPlate_Ptr], eax
 		xor edx, edx
-		lea eax, [esp + 0x470]
+		lea eax, [esp + 0x7C0]
+		call sub_6959C9
 
 		mov ebx, -1
 		mov edx, dword ptr [btnLastNumPlate_Name]
-		lea eax, [esp + 0x4A0]
+		lea eax, [esp + 0x7F0]
 		call sub_69586C
 		mov ebx, NumPlateDecrAsm
 		mov edx, eax
@@ -486,11 +497,12 @@ void __declspec(naked) NumPlateElemsDeclr()
 		call sub_4A0410
 		mov ds: [btnLastNumPlate_Ptr], eax
 		xor edx, edx
-		lea eax, [esp + 0x4A0]
+		lea eax, [esp + 0x7F0]
+		call sub_6959C9
 		
 		mov ebx, -1
 		mov edx, dword ptr [btnNextNumPlate_Name]
-		lea eax, [esp + 0x4D0]
+		lea eax, [esp + 0x820]
 		call sub_69586C
 		mov ebx, NumPlateIncrAsm
 		mov edx, eax
@@ -498,11 +510,12 @@ void __declspec(naked) NumPlateElemsDeclr()
 		call sub_4A0410
 		mov ds: [btnNextNumPlate_Ptr], eax
 		xor edx, edx
-		lea eax, [esp + 0x4D0]
-	
+		lea eax, [esp + 0x820]
+		call sub_6959C9
+
 		mov ebx, -1
 		mov edx, dword ptr [picNumPlate_Name]
-		lea eax, [esp + 0x4E0]
+		lea eax, [esp + 0x850]
 		call sub_69586C
 		mov ebx, picNumPlate_Func
 		mov edx, eax
@@ -510,11 +523,12 @@ void __declspec(naked) NumPlateElemsDeclr()
 		call sub_4A0410
 		mov ds: [picNumPlate_Ptr], eax
 		xor edx, edx
-		lea eax, [esp + 0x4E0]
-				
+		lea eax, [esp + 0x850]
+		call sub_6959C9
+
 		mov ebx, -1
 		mov edx, dword ptr [btnSelectNumPlate_Name]
-		lea eax, [esp + 0x500]
+		lea eax, [esp + 0x880]
 		call sub_69586C
 		mov ebx, btnSelectNumPlate_Func
 		mov edx, eax
@@ -522,9 +536,9 @@ void __declspec(naked) NumPlateElemsDeclr()
 		call sub_4A0410
 		mov ds: [btnSelectNumPlate_Ptr], eax
 		xor edx, edx
-		lea eax, [esp + 0x500]
-
+		lea eax, [esp + 0x880]
 		call sub_6959C9
+
 		jmp loc_536D1D
 	
 	NumPlateDecrAsm:
@@ -670,24 +684,8 @@ void __declspec(naked) NumPlateElemsDeclr()
 	}
 }
 
-void XNumPlate()
+void NumPlate_MainFunc()
 {
-	injector::MakeJMP(0x530CA4, LicensePlateBtn, true);
-	injector::MakeJMP(0x538F0F, LicensePlateBtn_Disable, true);
-	injector::MakeJMP(0x539981, LicensePlateBtn_Handler, true);
-	injector::MakeJMP(0x536D18, NumPlateElemsDeclr, true);
-
-	WriteString<uint32_t>(0x6C94D6, gui_garage2.c_str(), true);
-	WriteString<uint32_t>(0x6C94E2, gui_garage2.c_str(), true);
-	WriteString<uint32_t>(0x6D6956, gui_garage2.c_str(), true);
-	WriteString<uint32_t>(0x6D6A7E, gui_garage2.c_str(), true);
-	WriteString<uint32_t>(0x6DDD1F, gui_garage2.c_str(), true);
-	WriteString<uint32_t>(0x6DDD34, gui_garage2.c_str(), true);
-	WriteString<uint32_t>(0x6DE653, gui_garage2.c_str(), true);
-	WriteString<uint32_t>(0x6DE739, gui_garage2.c_str(), true);
-
-	numplate_filename.reserve(128);
-
 	if (GetGarageColorType())
 	{
 		garagecar_ptr = 0x5C3C;	// shop
@@ -697,111 +695,142 @@ void XNumPlate()
 		garagecar_ptr = 0xD7A0;	// garage
 	}
 
-	if (injector::ReadMemory<BYTE>(0x796330, true) == 4) /*if (*(BYTE*)0x7CF704 == 1)*/
-	{
-		if (!CDDir().empty())
-		{
-			if (getnumplates == false)
-			{
-				for (const auto& entry : std::filesystem::recursive_directory_iterator(CDDir() + sel_numplates_dir))
-				{
-					if (entry.is_regular_file())
-					{
-						std::filesystem::path relative = std::filesystem::relative(entry.path(), CDDir() + sel_numplates_dir);
-						std::string filename = relative.filename().stem().string();
-						std::string extension = relative.extension().string();
-						std::string result = relative.replace_extension(".tga").string();
+	curcar = injector::ReadMemory<short>(0x78ED16, true);
 
-						if ((extension == ".tga") || (extension == ".dds"))
+	if (!CDDir().empty())
+	{
+		if (getnumplates == false)
+		{
+			for (const auto& entry : std::filesystem::recursive_directory_iterator(CDDir() + sel_numplates_dir))
+			{
+				if (entry.is_regular_file())
+				{
+					std::filesystem::path relative = std::filesystem::relative(entry.path(), CDDir() + sel_numplates_dir);
+					std::string filename = relative.filename().stem().string();
+					std::string extension = relative.extension().string();
+					std::string result = relative.replace_extension(".tga").string();
+					std::ranges::replace(result, '\\', '/');
+					if ((extension == ".tga") || (extension == ".dds"))
+					{
+						if (filename.rfind("l_", 0) == 0)
 						{
-							if (filename.rfind("l_", 0) == 0)
-							{
-								sel_numplates_l.push_back(result);
-							}
-							else if (filename.rfind("s_", 0) == 0)
-							{
-								sel_numplates_s.push_back(result);
-							}
-							else if (filename.rfind("u_", 0) == 0)
-							{
-								sel_numplates_u.push_back(result);
-							}
+							sel_numplates_l.push_back(result);
+						}
+						else if (filename.rfind("s_", 0) == 0)
+						{
+							sel_numplates_s.push_back(result);
+						}
+						else if (filename.rfind("u_", 0) == 0)
+						{
+							sel_numplates_u.push_back(result);
 						}
 					}
 				}
-				getnumplates = true;
 			}
-			if (getnumplates == true)
+			getnumplates = true;
+		}
+		if (getnumplates == true)
+		{
+			if (numplatebtn)
 			{
-				if (numplatebtn)
+				if (GetGarageColorType())
 				{
-					curcar = injector::ReadMemory<short>(0x78ED16, true);
+					numplate_offset = 0x70;
+				}
+				else
+				{
+					numplate_offset = 0x7BD4;
+				}
 
-					if (GetGarageColorType())
-					{
-						numplate_offset = 0x70;
-					}
-					else
-					{
-						numplate_offset = 0x7BD4;
-					}
+				numplate_addr1 = injector::ReadMemory<DWORD>(0x7EA2CC);
+				numplate_addr2 = injector::ReadMemory<DWORD>(injector::ReadMemory<DWORD>(numplate_addr1) + (numplate_offset + (0x5C * curcar)));
+				std::string cur_numplate2 = GetString((void*)numplate_addr2);
 
-					numplate_addr1 = injector::ReadMemory<DWORD>(0x7EA2CC);
-					numplate_addr2 = injector::ReadMemory<DWORD>(injector::ReadMemory<DWORD>(numplate_addr1) + (numplate_offset + (0x5C * curcar)));
-					std::string cur_numplate2 = GetString((void*)numplate_addr2);
+				numplate_type = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(injector::ReadMemory<DWORD>(0x7EA2CC)) + garagecar_ptr + 0x1AF8, true);
 
-					numplate_type = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(injector::ReadMemory<DWORD>(0x7EA2CC)) + garagecar_ptr + 0x1AF8, true);
+				/*if (total_numplates == 1)
+				{
+					numplatebtn_state = false;
+				}
+				else
+				{
+					numplatebtn_state = true;
+				}*/
 
-					/*if (total_numplates == 1)
-					{
-						numplatebtn_state = false;
-					}
-					else
-					{
-						numplatebtn_state = true;
-					}*/
+				if (numplate_type == 0)
+				{
+					total_numplates = sel_numplates_l.size();
+				}
+				else if (numplate_type == 1)
+				{
+					total_numplates = sel_numplates_s.size();
+				}
+				else if (numplate_type == 2)
+				{
+					total_numplates = sel_numplates_u.size();
+				}
 
-					if (numplate_type == 0)
+				if (numplate_window)
+				{
+					if (is_numplate_found == false)
 					{
-						total_numplates = sel_numplates_l.size();
-					}
-					else if (numplate_type == 1)
-					{
-						total_numplates = sel_numplates_s.size();
-					}
-					else if (numplate_type == 2)
-					{
-						total_numplates = sel_numplates_u.size();
-					}
+						numplate_filename = cur_numplate2;
 
-					if (numplate_window)
-					{
-						if (is_numplate_found == false)
+						std::ranges::replace(numplate_filename, '\\', '/');
+
+						if (numplate_type == 0)
 						{
-							numplate_filename = cur_numplate2;
-
-							if (numplate_type == 0)
-							{
-								NumPlateSelect(find_index(sel_numplates_l, numplate_filename));
-							}
-							else if (numplate_type == 1)
-							{
-								NumPlateSelect(find_index(sel_numplates_s, numplate_filename));
-							}
-							else if (numplate_type == 2)
-							{
-								NumPlateSelect(find_index(sel_numplates_u, numplate_filename));
-							}
-
-							is_numplate_found = true;
+							NumPlateSelect(find_index(sel_numplates_l, numplate_filename));
 						}
+						else if (numplate_type == 1)
+						{
+							NumPlateSelect(find_index(sel_numplates_s, numplate_filename));
+						}
+						else if (numplate_type == 2)
+						{
+							NumPlateSelect(find_index(sel_numplates_u, numplate_filename));
+						}
+
+						is_numplate_found = true;
 					}
-					else
-					{
-						is_numplate_found = false;
-					}
+				}
+				else
+				{
+					is_numplate_found = false;
 				}
 			}
 		}
 	}
+
+}
+
+void __declspec(naked) a_NumPlate_MainFunc()
+{
+	__asm
+	{
+		call NumPlate_MainFunc
+
+		jne loc_538246
+		jmp loc_537D92
+
+	loc_538246:
+		push 0x538246
+		retn
+
+	loc_537D92:
+		push 0x537D92
+		retn
+	}
+}
+
+void XNumPlate()
+{
+	injector::MakeJMP(0x530CA4, LicensePlateBtn, true);
+	injector::MakeJMP(0x538F0F, LicensePlateBtn_Disable, true);
+	injector::MakeJMP(0x539981, LicensePlateBtn_Handler, true);
+	injector::MakeJMP(0x536D18, NumPlateElemsDeclr, true);
+
+	numplate_filename.reserve(128);
+
+	injector::MakeJMP(0x537D8C, a_NumPlate_MainFunc, true);
 }
