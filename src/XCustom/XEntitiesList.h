@@ -8,9 +8,15 @@ int available_entries;
 
 int cursel;
 
+int level_page;
+
 bool has_pages;	// we need this variable to handle button hovering resetting when refreshing the page
 
 bool has_stock;
+
+std::vector<BYTE> buttons_state(13);
+
+int last_available_btn;
 
 void __declspec(naked) a_EntriesList()
 {
@@ -69,6 +75,24 @@ void __declspec(naked) a_EntriesList3()
 
 	loc_5304D1:
 		push 0x5304D1
+		retn
+	}
+}
+
+void __declspec(naked) a_EntriesList4()
+{
+	__asm
+	{
+		movsx ebp, di
+		mov eax, esi
+		mov edx, ebp
+
+		add edx, entry_offset
+
+		jmp loc_53052E
+
+	loc_53052E:
+		push 0x53052E
 		retn
 	}
 }
@@ -178,7 +202,8 @@ void __declspec(naked) a_BtnUpDownElemsDeclr()
 		cmp dl, 03
 		jne skip
 
-		cmp cursel, 0xC	// 13 entries (counting from 0)
+		mov eax, cursel
+		cmp eax, last_available_btn // 13 entries (counting from 0)
 		je inc_entry_offset
 
 		jmp skip
@@ -198,10 +223,12 @@ void __declspec(naked) a_BtnUpDownElemsDeclr()
 		jmp skip
 
 	dec_entry_offset:
+		mov byte ptr[has_pages], 1
+
 		dec entry_offset
 		
 		mov ebx, -1
-		mov edx, page_name
+		lea edx, page_name
 		mov eax, esp
 		mov ecx, 0x69586C
 		call ecx
@@ -214,14 +241,18 @@ void __declspec(naked) a_BtnUpDownElemsDeclr()
 		xor edx, edx
 		mov ecx, 0x6959C9
 		call ecx
+
+		mov byte ptr [has_pages], 0
 
 		jmp skip
 
 	inc_entry_offset:
+		mov byte ptr[has_pages], 1
+
 		inc entry_offset
 		
 		mov ebx, -1
-		mov edx, page_name
+		lea edx, page_name
 		mov eax, esp
 		mov ecx, 0x69586C
 		call ecx
@@ -234,6 +265,8 @@ void __declspec(naked) a_BtnUpDownElemsDeclr()
 		xor edx, edx
 		mov ecx, 0x6959C9
 		call ecx
+
+		mov byte ptr [has_pages], 0
 
 		jmp skip
 
@@ -304,6 +337,7 @@ void __declspec(naked) a_PageCheck()
 		jmp end
 
 	truecond:
+		mov edi, last_available_btn
 		mov ds: [0x795DC0], edi
 		jmp end
 
@@ -322,6 +356,7 @@ void __declspec(naked) a_PageCheck2()
 		jmp end
 
 	truecond:
+		mov ecx, last_available_btn
 		mov ds: [0x795DC0], ecx
 		jmp end
 
@@ -331,23 +366,51 @@ void __declspec(naked) a_PageCheck2()
 	}
 }
 
-std::string GetCarTuningPageName(int index)
+//std::string GetCarTuningPageName(int index)
+//{
+//	switch (index)
+//	{
+//	case 0: return "performance";
+//	case 1: return "crashpower";
+//	case 2: return "armor";
+//	case 3: return "wheels";
+//	case 4: return "suspension";
+//	case 5: return "fbumper";
+//	case 6: return "rbumper";
+//	case 7: return "sidekit";
+//	case 8: return "hood";
+//	case 9: return "rearwing";
+//	case 10: return "paint";
+//	default: return "";
+//	}
+//}
+
+int GetLastAvailableButton()
 {
-	switch (index)
-	{
-	case 0: return "performance";
-	case 1: return "crashpower";
-	case 2: return "armor";
-	case 3: return "wheels";
-	case 4: return "suspension";
-	case 5: return "fbumper";
-	case 6: return "rbumper";
-	case 7: return "sidekit";
-	case 8: return "hood";
-	case 9: return "rearwing";
-	case 10: return "paint";
-	default: return "";
+	int lastAvailableIndex;
+
+	buttons_state[0] = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(0x78EBB4) + 0x54);
+	buttons_state[1] = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(0x78EBB8) + 0x54);
+	buttons_state[2] = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(0x78EBBC) + 0x54);
+	buttons_state[3] = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(0x78EBC0) + 0x54);
+	buttons_state[4] = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(0x78EBC4) + 0x54);
+	buttons_state[5] = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(0x78EBC8) + 0x54);
+	buttons_state[6] = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(0x78EBCC) + 0x54);
+	buttons_state[7] = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(0x78EBD0) + 0x54);
+	buttons_state[8] = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(0x78EBD4) + 0x54);
+	buttons_state[9] = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(0x78EBD8) + 0x54);
+	buttons_state[10] = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(0x78EBDC) + 0x54);
+	buttons_state[11] = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(0x78EBE0) + 0x54);
+	buttons_state[12] = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(0x78EBE4) + 0x54);
+
+	for (int i = buttons_state.size() - 1; i >= 0; --i) {
+		if (buttons_state[i] == 1) {
+			lastAvailableIndex = i;
+			break;
+		}
 	}
+
+	return lastAvailableIndex;
 }
 
 void EntriesList_MainFunc()
@@ -361,22 +424,26 @@ void EntriesList_MainFunc()
 		has_stock = false;
 	}
 
-	if (injector::ReadMemory<int>(0x795D38) == 0)
+	level_page = injector::ReadMemory<int>(0x795D38);
+
+	if (level_page < 3)
+	{
+		page_name = GetString(injector::ReadMemory<void*>(0x795D28));
+	}
+
+	if (level_page == 0)
 	{
 		part_index = injector::ReadMemory<int>(0x795DC0);
 		injector::WriteMemory<BYTE>(btnListUp_Ptr + 0x55, false);
 		injector::WriteMemory<BYTE>(btnListDown_Ptr + 0x55, false);
 		entry_offset = 0;
-
-		page_name = GetCarTuningPageName(part_index);
 	}
 	else
 	{
 		available_entries = injector::ReadMemory<int>(0x795DBC);
 
-		if (available_entries < parts_count[part_index] + has_stock)	// + 1 because of "(Stock)" button
+		if ((available_entries < parts_count[part_index] + has_stock)/* || (level_page == 3)*/)	// + 1 because of "(Stock)" button
 		{
-			has_pages = true;
 			// Make arrow buttons visible
 			injector::WriteMemory<BYTE>(btnListUp_Ptr + 0x55, true);
 			injector::WriteMemory<BYTE>(btnListDown_Ptr + 0x55, true);
@@ -384,7 +451,7 @@ void EntriesList_MainFunc()
 			cursel = injector::ReadMemory<int>(0x795DC0);
 
 			// make "up" button unavailable when selecting the first element
-			if (cursel == 0 && entry_offset > 0)
+			if (cursel == 0 && entry_offset > 0 && last_available_btn > 0)
 			{
 				injector::WriteMemory<BYTE>(btnListUp_Ptr + 0x54, true);
 			}
@@ -393,8 +460,10 @@ void EntriesList_MainFunc()
 				injector::WriteMemory<BYTE>(btnListUp_Ptr + 0x54, false);
 			}
 
+			last_available_btn = GetLastAvailableButton();
+
 			// make "down" button unavailable when selecting the last element
-			if ((entry_offset == parts_count[part_index] - available_entries + has_stock) || (cursel < 0xC)) // + 1 because of "(Stock)" button
+			if ((entry_offset == parts_count[part_index] - available_entries + has_stock) || (cursel < last_available_btn)) // + 1 because of "(Stock)" button
 			{
 				injector::WriteMemory<BYTE>(btnListDown_Ptr + 0x54, false);
 			}
@@ -405,7 +474,6 @@ void EntriesList_MainFunc()
 		}
 		else
 		{
-			has_pages = false;
 			injector::WriteMemory<BYTE>(btnListUp_Ptr + 0x55, false);
 			injector::WriteMemory<BYTE>(btnListDown_Ptr + 0x55, false);
 		}
@@ -430,11 +498,10 @@ void __declspec(naked) a_EntriesList_MainFunc()
 
 void XEntriesList()
 {
-	page_name.reserve(128);
-
 	injector::MakeJMP(0x530463, a_EntriesList);
 	injector::MakeJMP(0x53049C, a_EntriesList2);
 	injector::MakeJMP(0x5304CB, a_EntriesList3);
+	injector::MakeJMP(0x530527, a_EntriesList4);
 
 	injector::MakeJMP(0x530A43, a_GetPartsCount);
 	injector::MakeJMP(0x53767C, a_BtnUpDownElemsDeclr);

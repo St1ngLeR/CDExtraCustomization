@@ -38,6 +38,9 @@ void Init()
 	WriteString<uint32_t>(0x6DE653, gui_garage2.c_str(), true);
 	WriteString<uint32_t>(0x6DE739, gui_garage2.c_str(), true);
 
+	page_name.reserve(128);
+	numplate_filename.reserve(128);
+
 	while (g_running.load(std::memory_order_relaxed))
 	{
 		XNumPlate();

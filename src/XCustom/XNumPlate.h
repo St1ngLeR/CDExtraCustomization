@@ -829,8 +829,5 @@ void XNumPlate()
 	injector::MakeJMP(0x538F0F, LicensePlateBtn_Disable, true);
 	injector::MakeJMP(0x539981, LicensePlateBtn_Handler, true);
 	injector::MakeJMP(0x536D18, NumPlateElemsDeclr, true);
-
-	numplate_filename.reserve(128);
-
 	injector::MakeJMP(0x537D8C, a_NumPlate_MainFunc, true);
 }
