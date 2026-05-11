@@ -1,3 +1,5 @@
+<img alt="image" src="https://github.com/user-attachments/assets/b0932c00-36fd-40ee-bed0-1edbb5bdf967" />
+
 # Crashday 1.2 - Extra Customization
 
 A plugin for Crashday 1.2 for extending and providing new functionality for customizing and modding cars, while maintaining some compatibility with the vanilla game.
