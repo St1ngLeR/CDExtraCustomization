@@ -1,6 +1,7 @@
 #include <thread>
 #include <mutex>
 #include <chrono>
+#include <unordered_map>
 
 #include "injector/injector.hpp"
 

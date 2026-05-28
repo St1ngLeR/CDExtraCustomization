@@ -67,17 +67,6 @@ int find_index(const std::vector<std::string>& vec, const std::string& value)
 	return 0;
 }
 
-void CDWriteString(int addr, std::string str)
-{
-	if (addr)
-	{
-		injector::WriteMemory<int>(addr + 0x8, str.length(), true);
-		injector::WriteMemory<int>(injector::ReadMemory<DWORD>(addr) + 0x4, str.length(), true);
-		injector::WriteMemory<int>(injector::ReadMemory<DWORD>(addr) + 0x8, str.length(), true);
-		WriteString<uint32_t>(injector::ReadMemory<DWORD>(addr) + 0xC, str.c_str(), true);
-	}
-}
-
 void __declspec(naked) LicensePlateBtn()
 {
 	__asm
@@ -351,7 +340,7 @@ void NumPlateSelect(int index)
 
 	numplate_select_text = std::to_string(cur_numplate + 1) + "/" + std::to_string(total_numplates);
 
-	CDWriteString(lblNumPlatePage_Ptr + 0x10C, numplate_select_text);
+	AllocString(lblNumPlatePage_Ptr + 0x10C, numplate_select_text);
 
 	injector::WriteMemory<float>(picNumPlate_Ptr + 0x13C, 0.f, true);
 
@@ -370,8 +359,10 @@ void NumPlateIncr()
 
 void ChangeNumPlate()
 {
-	CDWriteString(injector::ReadMemory<DWORD>(numplate_addr1) + (numplate_offset + (0x5C * curcar)), numplate_tex);
-	CDWriteString(0x78ED50 + (0x70 * curcar), numplate_tex);
+	AllocString(injector::ReadMemory<DWORD>(numplate_addr1) + (numplate_offset + (0x5C * curcar)), numplate_tex);
+	AllocString(0x78ED50 + (0x70 * curcar), numplate_tex);
+
+
 }
 
 void __declspec(naked) LicensePlateBtn_Disable()

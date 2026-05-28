@@ -337,7 +337,12 @@ void __declspec(naked) a_PageCheck()
 		jmp end
 
 	truecond:
+		cmp entry_offset, 0
+		je skip
 		mov edi, last_available_btn
+		jmp end
+
+	skip:
 		mov ds: [0x795DC0], edi
 		jmp end
 
@@ -356,7 +361,12 @@ void __declspec(naked) a_PageCheck2()
 		jmp end
 
 	truecond:
+		cmp entry_offset, 0
+		je skip
 		mov ecx, last_available_btn
+		jmp end
+
+	skip:
 		mov ds: [0x795DC0], ecx
 		jmp end
 
