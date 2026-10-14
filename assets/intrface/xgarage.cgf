@@ -382,6 +382,38 @@ TextColor: default                                     # rgb text color or "defa
 
 Next:		                                       #
 Type: GUIButton                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: btnListUp                                       # element name
+Group: default
+Parent: default
+Style: button_up
+Text: default	                                       # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 72		                                       # x coord
+Y: 99		                                       # y coord
+Width: default                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: verybig				# font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: btnListDown                                      # element name
+Group: default
+Parent: default
+Style: button_down
+Text: default	                                       # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 72		                                       # x coord
+Y: 400		                                       # y coord
+Width: default                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: verybig				# font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
 Name: btnLastCar                                       # element name
 Group: default
 Parent: default
@@ -487,6 +519,38 @@ Enabled: 1                                             # enabled? (0 or 1)
 X: 20		                                       # x coord
 Y: 440		                                       # y coord
 Width: 110	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUILabel                                       # TODO! Elementtyp (bis jetzt GUILabel, GUIButton, GUIFrame, GUIChecker)
+Name: lblNitroColorSelSubCap                                 # element name
+Group: default
+Parent: default
+Style: label_subcaption
+Text: $ID ExtraCustomization.Main SUBTITLENITROCOLOR	# screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 400		                                       # x coord
+Y: -10		                                       # y coord
+Width: 200	                                       # width ("default" for automatic)
+Height: 100                                             # height ("default" for automatic)
+TextAlign: right                                       # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
+
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnQuitNitroColorChange # element name
+Group: colorsel
+Parent: default
+Style: button_back
+Text: $ID gametext/general.txt BACK   # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 480		                                       # x coord
+Y: 440		                                       # y coord
+Width: 140	                                       # width ("default" for automatic)
 Height: default                                        # height ("default" for automatic)
 TextAlign: center                                      # text alignment (left, right, center, default)
 TextStyle: fat                                         # font type (normal, fat, verybig)
@@ -987,4 +1051,34 @@ TextAlign: center                                      # text alignment (left, r
 TextStyle: fat                                         # font type (normal, fat, verybig)
 TextColor: default                                     # rgb text color or "default"
 
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnOpenNumPlate                             # element name
+Group: default
+Parent: default
+Style: widescreen_alignright
+Text: $ID ExtraCustomization.Main OPENNUMPLATEBUTTON # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 290		                                       # x coord
+Y: 374		                                       # y coord
+Width: 160	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"
 
+Next:		                                       #
+Type: GUIButton	                                       # element type
+Name: btnOpenNitroColor                             # element name
+Group: default
+Parent: default
+Style: widescreen_alignright
+Text: $ID ExtraCustomization.Main OPENNITROCOLORBUTTON # screen caption ("default" for no text)
+Enabled: 1                                             # enabled? (0 or 1)
+X: 460		                                       # x coord
+Y: 374		                                       # y coord
+Width: 160	                                       # width ("default" for automatic)
+Height: default                                        # height ("default" for automatic)
+TextAlign: center                                      # text alignment (left, right, center, default)
+TextStyle: fat                                         # font type (normal, fat, verybig)
+TextColor: default                                     # rgb text color or "default"

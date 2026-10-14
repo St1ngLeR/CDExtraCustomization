@@ -7,12 +7,20 @@ Sections: 1
 
 #-------------------------------------------------------------------------------------
 SECTION: ExtraCustomization.Main
-Keys: 2
+Keys: 4
 
-ID   NUMPLATE
+ID   OPENNUMPLATEBUTTON
 DESC
 TEXT Номерной знак
 
 ID   SUBTITLENUMPLATE
 DESC
 TEXT Номерной знак
+
+ID   OPENNITROCOLORBUTTON
+DESC 
+TEXT Цвет нитро
+
+ID   SUBTITLENITROCOLOR
+DESC 
+TEXT Цвет нитро

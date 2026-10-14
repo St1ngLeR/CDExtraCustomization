@@ -7,12 +7,20 @@ Sections: 1
 
 #-------------------------------------------------------------------------------------
 SECTION: ExtraCustomization.Main
-Keys: 2
+Keys: 4
 
-ID   NUMPLATE
+ID   OPENNUMPLATEBUTTON
 DESC
-TEXT License Plate
+TEXT Choose License Plate
 
 ID   SUBTITLENUMPLATE
 DESC
 TEXT Choose License Plate
+
+ID   OPENNITROCOLORBUTTON
+DESC 
+TEXT Choose Nitro Color
+
+ID   SUBTITLENITROCOLOR
+DESC 
+TEXT Choose Nitro Color
