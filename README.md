@@ -10,6 +10,8 @@ Features
 - Customizable license plates
 - Dynamic car parts (suspension & mudguards)
 - "Scrollable" tuning parts list
+- Customizable nitro color (like in Redline Edition)
+- More adjustable parameters for tunings
 
 ## Install & usage
 To make ASI plugin work in the game you need to use [ThirteenAG's Ultimate ASI Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader) and put plugin files in to game directory or folders mentioned in ThirteenAG's loader GitHub page.
@@ -17,6 +19,17 @@ To make ASI plugin work in the game you need to use [ThirteenAG's Ultimate ASI L
 ## Technical realizations
 
 For the features provided by the plugin, it is necessary to follow a number of technical actions for correct implementation in the game.
+
+### More adjustable parameters
+
+The plugin adds new configurable parameters that can be applied to spare parts in `carinfo.cca`. All the new parameters and an example of their use are written below:
+- `torquecrv=[file]` - swapping the torque curve. Accepts all CRV-files. If the file is not found, the fallback values are used. (e.g. `torquecrv=perf2.crv`)
+- `rpm_max=[int]`, `rpm_idle=[int]`, `rpm_shift_down=[int]` and `rpm_shift_up=[int]` - customizable RPM values. (e.g. `rpm_max=10000`)
+-  `steerspeed=[float]` - wheel turn velocity in angle/s. (e.g. `steerspeed=40`)
+- `gear_ratios` - gear ratios separated by "|". (e.g. `gear_ratios=-3.58|3.6|2.8|2.0|1.6|1.2|0.9`)
+- `drive=[string]` - car drive ("front", "rear" or "4wd"). (e.g. `drive=4wd`)
+- `add_wheelposzfront=[float]` and `add_wheelposzrear=[float]` - wheel offset in Z direction. (e.g. `add_wheelposzfront=0.4`)
+- `scale_shadowz` - shadow length scaling. (e.g. `scale_shadowz=1.2`)
 
 ### New wheel parameters
 
