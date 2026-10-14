@@ -22,6 +22,7 @@ namespace
 	std::atomic<bool> g_running{ true };
 }
 
+
 void Init()
 {
 	//AllocConsole();
@@ -41,6 +42,8 @@ void Init()
 
 	page_name.reserve(128);
 	numplate_filename.reserve(128);
+
+	NitroColor_InstallHooks();
 
 	while (g_running.load(std::memory_order_relaxed))
 	{

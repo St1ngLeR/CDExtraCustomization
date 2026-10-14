@@ -1,9 +1,12 @@
+#include "XCustom/XNitroColor.h"	// by Fixik
+
 #include "filesystem"
 
 const char* NumPlate_Key = "NUMPLATE";
 const char* group_numplate = "numplate";
-const char* lstbtnlvl_numplate = "numplate";
 
+const char* btnOpenNumPlate_Name = "btnOpenNumPlate";
+uintptr_t btnOpenNumPlate_Ptr;
 const char* btnQuitNumPlate_Name = "btnQuitNumPlate";
 uintptr_t btnQuitNumPlate_Ptr;
 const char* lblNumPlatePage_Name = "lblNumPlatePage";
@@ -17,16 +20,22 @@ uintptr_t btnNextNumPlate_Ptr;
 const char* btnSelectNumPlate_Name = "btnSelectNumPlate";
 uintptr_t btnSelectNumPlate_Ptr;
 
+const char* btnOpenNitroColor_Name = "btnOpenNitroColor";
+uintptr_t btnOpenNitroColor_Ptr;
+const char* lblNitroColorSelSubCap_Name = "lblNitroColorSelSubCap";
+uintptr_t lblNitroColorSelSubCap_Ptr;
+const char* btnQuitNitroColorChange_Name = "btnQuitNitroColorChange";
+uintptr_t btnQuitNitroColorChange_Ptr;
+
 bool numplatebtn;
 bool numplatebtn_state = true;
 
 bool numplate_window;
+bool nitrocolor_window;
 
 std::string numplate_filename;
 
-int numplate_addr1;
-int numplate_addr2;
-int numplate_addr3;
+int numplate_addr;
 
 int numplate_offset;
 
@@ -65,240 +74,6 @@ int find_index(const std::vector<std::string>& vec, const std::string& value)
 		return std::distance(vec.begin(), it);
 	}
 	return 0;
-}
-
-void __declspec(naked) LicensePlateBtn()
-{
-	__asm
-	{
-		cmp byte ptr ds: [0x78ED10], 0x02
-		jnb skip
-
-		mov edx, 0x6CE390	// "toplevel" - main list
-		mov eax, esi
-		call string_equal_operator
-		test eax, eax
-		jz skip
-
-		mov byte ptr [numplatebtn], 1
-
-		mov eax, ds: [0x78ED14]
-		sar eax, 0x10
-		shl eax, 0x04
-		lea ecx, ds: [eax * 0x08]
-		mov edx, ds: [0x795DBC]
-		sub ecx, eax
-
-		lea eax, ds: [edx * 0x04]
-		add eax, edx
-		shl eax, 0x02
-		sub eax, edx
-		mov bl, ds: [ecx + 0x78ED85]
-		shl eax, 0x02
-
-		mov dl, byte ptr [numplatebtn_state]
-		mov byte ptr ds: [eax + 0x795DE4], dl	// disabled / enabled
-		mov edx, ds: [0x795DBC]
-		lea eax, ds: [edx * 0x04]
-		add eax, edx
-		shl eax, 0x02
-		sub eax, edx
-		shl eax, 0x02
-		add eax, 0x795DE4
-		mov edx, 0x6CE399
-		add eax, 0x28
-		mov ebx, dword ptr [NumPlate_Key]
-		call sub_695A15
-		mov edx, dword ptr [XCustom_Section_Main]
-		mov eax, ds: [0x7E3110]
-		call sub_66F410
-		mov ebx, -1
-		mov edx, eax
-		lea eax, [ebp - 0x156]
-		call sub_69586C
-		mov edx, ds: [0x795DBC]
-		mov ecx, eax
-		lea eax, [edx * 0x04]
-		add eax, edx
-		shl eax, 0x02
-		sub eax, edx
-		shl eax, 0x02
-		add eax, 0x795DE4
-		mov edx, ecx
-		add eax, 0x14
-		call sub_695F1D
-		lea eax, [ebp - 0x156]
-		xor edx, edx
-		call sub_6959C9
-		mov edx, ds: [0x795DBC]
-		lea eax, [edx * 0x04]
-		add eax, edx
-		shl eax, 0x02
-		sub eax, edx
-		xor bh, bh
-		mov ds: [eax * 0x04 + 0x795E2E], bh
-		mov eax, ds: [0x78ED14]
-		sar eax, 0x10
-		shl eax, 0x04
-		mov edx, eax
-		shl eax, 0x03
-		sub eax, edx
-		add eax, 0x78ED18
-		mov edx, ds: [0x795DBC]
-		lea ecx, ds: [eax + 0x04]
-		lea eax, ds: [edx * 0x04]
-		add eax, edx
-		shl eax, 0x02
-		sub eax, edx
-		shl eax, 0x02
-		add eax, 0x795DE4
-		mov edx, ecx
-		add eax, 0x38
-		call sub_695F1D
-		mov edx, ds: [0x795DBC]
-		lea eax, ds: [edx * 0x4]
-		add eax, edx
-		shl eax, 0x02
-		sub eax, edx
-		mov ds: [eax * 0x04 + 0x795E2C], bh
-		mov edx, ds: [0x795DBC]
-		lea eax, ds: [edx * 4]
-		add eax, edx
-		shl eax, 0x02
-		sub eax, edx
-		mov byte ptr [eax * 0x04 + 0x795E2F], 0x01
-		mov edx, ds: [0x795DBC]
-		lea eax, ds: [edx * 0x04]
-		add eax, edx
-		shl eax, 0x02
-		sub eax, edx
-		mov[eax * 0x04 + 0x795E2D], bh
-
-		jmp loc_530E38
-
-	skip:
-		mov byte ptr [numplatebtn], 0
-
-		cmp byte ptr ds: [0x78ED10], 0x02
-		jmp loc_530CAB
-
-	string_equal_operator:
-		push 0x696058
-		retn
-
-	loc_530CAB:
-		push 0x530CAB
-		retn
-
-	loc_530E38:
-		push 0x530E38
-		retn
-
-	sub_695A15:
-		push 0x695A15
-		retn
-
-	sub_66F410:
-		push 0x66F410
-		retn
-
-	sub_69586C:
-		push 0x69586C
-		retn
-
-	sub_695F1D:
-		push 0x695F1D
-		retn
-
-	sub_6959C9:
-		push 0x6959C9
-		retn
-	}
-}
-
-void __declspec(naked) LicensePlateBtn_Handler()
-{
-	__asm
-	{
-		cmp byte ptr [numplatebtn], 1
-		jne defaultbtn
-
-		call go_to_numplate_page
-		jmp loc_53998B
-
-	defaultbtn:
-		mov eax, 0x0B
-		call sub_533B60
-		jmp loc_53998B
-
-	go_to_numplate_page:
-		push ebx
-		push ecx
-		push edx
-		push esi
-
-		mov ebx, -1
-		mov edx, dword ptr [group_numplate]
-		mov eax, esp
-		call sub_69586C
-
-		mov ecx, ds: [0x78D65C]
-		mov edx, eax
-		mov eax, ecx
-		call sub_4A4690
-
-		mov eax, esp
-		xor edx, edx
-		call sub_6959C9
-			
-		mov edx, dword ptr [lstbtnlvl_numplate]
-		mov eax, 0x795D28
-		call sub_695A15
-
-		/*mov ebx, ds: 0x795D38
-		inc ebx
-		mov ds: 0x795D38, ebx*/
-
-		mov byte ptr [numplate_window], 1
-
-		pop esi
-		pop edx
-		pop ecx
-		pop ebx
-		retn
-
-	sub_533B60:
-		push 0x533B60
-		retn
-
-	sub_52D600:
-		push 0x52D600
-		retn
-
-	loc_53998B:
-		push 0x53998B
-		retn
-
-	sub_69586C:
-		push 0x69586C
-		retn
-
-	sub_4A4690:
-		push 0x4A4690
-		retn
-
-	sub_6959C9:
-		push 0x6959C9
-		retn
-
-	sub_695A15:
-		push 0x695A15
-		retn
-
-	sub_52CE50:
-		push 0x52CE50
-		retn
-	}
 }
 
 void NumPlateSelect(int index)
@@ -359,28 +134,8 @@ void NumPlateIncr()
 
 void ChangeNumPlate()
 {
-	AllocString(injector::ReadMemory<DWORD>(numplate_addr1) + (numplate_offset + (0x5C * curcar)), numplate_tex);
-	AllocString(0x78ED50 + (0x70 * curcar), numplate_tex);
-
-
-}
-
-void __declspec(naked) LicensePlateBtn_Disable()
-{
-	__asm
-	{
-		call sub_491010
-		mov byte ptr[numplatebtn], 0
-		jmp loc_538F14
-
-	sub_491010:
-		push 0x491010
-		retn
-
-	loc_538F14 :
-		push 0x538F14
-		retn
-	}
+	AllocString(numplate_addr, numplate_tex);
+	AllocString(0x78ED18 + (0x70 * curcar) + 0x38, numplate_tex);
 }
 
 void __declspec(naked) NumPlateElemsDeclr()
@@ -390,6 +145,18 @@ void __declspec(naked) NumPlateElemsDeclr()
 		call sub_6959C9
 		
 		// declaring the UI elements
+
+		mov ebx, -1
+		mov edx, dword ptr [btnOpenNumPlate_Name]
+		lea eax, [esp + 0x80]
+		call sub_69586C
+		mov edx, eax
+		mov eax, ecx
+		call sub_49B170
+		mov ds: [btnOpenNumPlate_Ptr], eax
+		xor edx, edx
+		lea eax, [esp + 0x80]
+		call sub_6959C9
 
 		mov ebx, -1
 		mov edx, dword ptr [btnQuitNumPlate_Name]
@@ -463,7 +230,56 @@ void __declspec(naked) NumPlateElemsDeclr()
 		lea eax, [esp + 0x7A0]
 		call sub_6959C9
 
+		mov ebx, -1
+		mov edx, dword ptr [btnOpenNitroColor_Name]
+		lea eax, [esp + 0x80]
+		call sub_69586C
+		mov edx, eax
+		mov eax, ecx
+		call sub_49B170
+		mov ds: [btnOpenNitroColor_Ptr], eax
+		xor edx, edx
+		lea eax, [esp + 0x80]
+		call sub_6959C9
+
+		mov ebx, -1
+		mov edx, dword ptr [btnQuitNitroColorChange_Name]
+		lea eax, [esp + 0x80]
+		call sub_69586C
+		mov edx, eax
+		mov eax, ecx
+		call sub_49B170
+		mov ds: [btnQuitNitroColorChange_Ptr], eax
+		xor edx, edx
+		lea eax, [esp + 0x80]
+		call sub_6959C9
+
+		mov ebx, -1
+		mov edx, dword ptr [lblNitroColorSelSubCap_Name]
+		lea eax, [esp + 0x80]
+		call sub_69586C
+		mov edx, eax
+		mov eax, ecx
+		call sub_49B170
+		mov ds: [lblNitroColorSelSubCap_Ptr], eax
+		xor edx, edx
+		lea eax, [esp + 0x80]
+		call sub_6959C9
+
 		// assigning the functions to the UI elements
+		
+		mov ebx, -1
+		mov edx, dword ptr [btnOpenNumPlate_Name]
+		lea eax, [esp + 0xC0]
+		call sub_69586C
+		mov ebx, btnOpenNumPlate_Func
+		mov edx, eax
+		mov eax, ecx
+		call sub_4A0410
+		mov ds: [btnOpenNumPlate_Ptr], eax
+		xor edx, edx
+		lea eax, [esp + 0xC0]
+		call sub_6959C9
 
 		mov ebx, -1
 		mov edx, dword ptr [btnQuitNumPlate_Name]
@@ -530,6 +346,32 @@ void __declspec(naked) NumPlateElemsDeclr()
 		lea eax, [esp + 0x880]
 		call sub_6959C9
 
+		mov ebx, -1
+		mov edx, dword ptr [btnOpenNitroColor_Name]
+		lea eax, [esp + 0xC0]
+		call sub_69586C
+		mov ebx, btnOpenNitroColor_Func
+		mov edx, eax
+		mov eax, ecx
+		call sub_4A0410
+		mov ds: [btnOpenNitroColor_Ptr], eax
+		xor edx, edx
+		lea eax, [esp + 0xC0]
+		call sub_6959C9
+
+		mov ebx, -1
+		mov edx, dword ptr [btnQuitNitroColorChange_Name]
+		lea eax, [esp + 0xC0]
+		call sub_69586C
+		mov ebx, btnQuitNitroColorChange_Func
+		mov edx, eax
+		mov eax, ecx
+		call sub_4A0410
+		mov ds: [btnQuitNitroColorChange_Ptr], eax
+		xor edx, edx
+		lea eax, [esp + 0xC0]
+		call sub_6959C9
+
 		jmp loc_536D1D
 	
 	NumPlateDecrAsm:
@@ -558,7 +400,6 @@ void __declspec(naked) NumPlateElemsDeclr()
 
 		jmp skip
 
-
 	btnQuitNumPlate_Func:
 		push ebx
 		push ecx
@@ -569,10 +410,19 @@ void __declspec(naked) NumPlateElemsDeclr()
 		jne skip
 
 		mov byte ptr [numplate_window], 0
+		mov byte ptr [nitrocolor_window], 0
+
+		mov ah, byte ptr ds: [0x78ED10]
+		cmp ah, 0
+		jne skip2
 
 		call sub_52CE50
+		jmp loc_539A0F
 
-		jmp sub_539A0F
+	skip2:
+		call sub_539B70
+
+		jmp skip
 
 	picNumPlate_Func:
 		push ebx
@@ -617,12 +467,95 @@ void __declspec(naked) NumPlateElemsDeclr()
 
 		jmp skip
 
+	btnOpenNumPlate_Func:
+		push ebx
+		push ecx
+		push esi
+		push edi
+		sub esp, 0x40
+		cmp dl, 03
+		jne skip
+
+		mov ebx, -1
+		mov edx, dword ptr [group_numplate]
+		mov eax, esp
+		call sub_69586C
+
+		mov ecx, ds: [0x78D65C]
+		mov edx, eax
+		mov eax, ecx
+		call sub_4A4690
+
+		mov eax, esp
+		xor edx, edx
+		call sub_6959C9
+
+		mov byte ptr [numplate_window], 1
+
+		jmp skip
+
+	btnQuitNitroColorChange_Func:
+		push ebx
+		push ecx
+		push esi
+		push edi
+		sub esp, 0x40
+		cmp dl, 03
+		jne skip
+
+		mov byte ptr [numplate_window], 0
+		mov byte ptr [nitrocolor_window], 0
+
+		mov dword ptr [gColorsOpen], 0
+
+		mov ah, byte ptr ds: [0x78ED10]
+		cmp ah, 0
+		jne skip2
+
+		call sub_52CE50
+		jmp loc_539A0F
+
+	btnOpenNitroColor_Func:
+		push ebx
+		push ecx
+		push esi
+		push edi
+		sub esp, 0x40
+		cmp dl, 03
+		jne skip
+
+		call OpenNitroMenu
+
+		mov byte ptr [nitrocolor_window], 1
+
+		jmp skip
+
 	skip:
 		add esp, 0x40
 		pop edi
 		pop esi
 		pop ecx
 		pop ebx
+		retn
+
+	sub_539B70:
+		push 0x539B70
+		retn
+
+	sub_695A15:
+		push 0x695A15
+		retn
+
+	sub_538EE0:
+		push 0x538EE0
+		retn
+
+	sub_4970E0:
+		push 0x4970E0
+		retn
+
+	sub_4A4690:
+		push 0x4A4690
 		retn
 
 	sub_695AA9:
@@ -657,8 +590,12 @@ void __declspec(naked) NumPlateElemsDeclr()
 		push 0x52CE50
 		retn
 
-	sub_539A0F:
+	loc_539A0F:
 		push 0x539A0F
+		retn
+
+	loc_56768D:
+		push 0x56768D
 		retn
 
 	sub_4AF990:
@@ -722,77 +659,71 @@ void NumPlate_MainFunc()
 		}
 		if (getnumplates == true)
 		{
-			if (numplatebtn)
+			if (GetGarageColorType())
 			{
-				if (GetGarageColorType())
-				{
-					numplate_offset = 0x70;
-				}
-				else
-				{
-					numplate_offset = 0x7BD4;
-				}
+				numplate_offset = 0x70;
+			}
+			else
+			{
+				numplate_offset = 0x7BD4;
+			}
 
-				numplate_addr1 = injector::ReadMemory<DWORD>(0x7EA2CC);
-				numplate_addr2 = injector::ReadMemory<DWORD>(injector::ReadMemory<DWORD>(numplate_addr1) + (numplate_offset + (0x5C * curcar)));
-				std::string cur_numplate2 = GetString((void*)numplate_addr2);
-
+			if (!CDNetwork())
+			{
+				numplate_addr = injector::ReadMemory<DWORD>(injector::ReadMemory<DWORD>(0x7EA2CC)) + (numplate_offset + (0x5C * curcar));
 				numplate_type = injector::ReadMemory<BYTE>(injector::ReadMemory<DWORD>(injector::ReadMemory<DWORD>(0x7EA2CC)) + garagecar_ptr + 0x1AF8, true);
+			}
+			else
+			{
+				numplate_addr = injector::ReadMemory<DWORD>(GetPlayerParam<DWORD>((CDPlayer)0x6854, 0));
+				numplate_type = GetPlayerParam<BYTE>((CDPlayer)0x63C0, 0);
+			}
 
-				/*if (total_numplates == 1)
-				{
-					numplatebtn_state = false;
-				}
-				else
-				{
-					numplatebtn_state = true;
-				}*/
+			std::string cur_numplate2 = GetString(injector::ReadMemory<void*>(numplate_addr));
 
-				if (numplate_type == 0)
-				{
-					total_numplates = sel_numplates_l.size();
-				}
-				else if (numplate_type == 1)
-				{
-					total_numplates = sel_numplates_s.size();
-				}
-				else if (numplate_type == 2)
-				{
-					total_numplates = sel_numplates_u.size();
-				}
+			if (numplate_type == 0)
+			{
+				total_numplates = sel_numplates_l.size();
+			}
+			else if (numplate_type == 1)
+			{
+				total_numplates = sel_numplates_s.size();
+			}
+			else if (numplate_type == 2)
+			{
+				total_numplates = sel_numplates_u.size();
+			}
 
-				if (numplate_window)
+			if (numplate_window)
+			{
+				if (is_numplate_found == false)
 				{
-					if (is_numplate_found == false)
+					numplate_filename = cur_numplate2;
+
+					std::ranges::replace(numplate_filename, '\\', '/');
+
+					if (numplate_type == 0)
 					{
-						numplate_filename = cur_numplate2;
-
-						std::ranges::replace(numplate_filename, '\\', '/');
-
-						if (numplate_type == 0)
-						{
-							NumPlateSelect(find_index(sel_numplates_l, numplate_filename));
-						}
-						else if (numplate_type == 1)
-						{
-							NumPlateSelect(find_index(sel_numplates_s, numplate_filename));
-						}
-						else if (numplate_type == 2)
-						{
-							NumPlateSelect(find_index(sel_numplates_u, numplate_filename));
-						}
-
-						is_numplate_found = true;
+						NumPlateSelect(find_index(sel_numplates_l, numplate_filename));
 					}
+					else if (numplate_type == 1)
+					{
+						NumPlateSelect(find_index(sel_numplates_s, numplate_filename));
+					}
+					else if (numplate_type == 2)
+					{
+						NumPlateSelect(find_index(sel_numplates_u, numplate_filename));
+					}
+
+					is_numplate_found = true;
 				}
-				else
-				{
-					is_numplate_found = false;
-				}
+			}
+			else
+			{
+				is_numplate_found = false;
 			}
 		}
 	}
-
 }
 
 void __declspec(naked) a_NumPlate_MainFunc()
@@ -814,11 +745,65 @@ void __declspec(naked) a_NumPlate_MainFunc()
 	}
 }
 
+static void ExtraCustomBtns_Handler()
+{
+	std::string cur_list_level = GetString(injector::ReadMemory<void*>(0x795D28));
+	std::string cur_group = GetString(injector::ReadMemory<void*>(injector::ReadMemory<DWORD>(injector::ReadMemory<DWORD>(0x78D65C) + 0x248)));
+
+	bool numplate_visibility = cur_list_level == "toplevel" == !numplate_window == (*(uint8_t*)0x795D1C || *(uint8_t*)0x7CD0E0) && cur_group != "colorsel";
+	bool nitrocolor_visibility = nitrocolor_window;
+	bool colorsel_visibility = cur_group == "colorsel" == !nitrocolor_window;
+
+	bool enabled_state = (*(DWORD*)p_Curr3DModel != NULL && *(DWORD*)p_CDNetwork != NULL) || (*(DWORD*)p_CDNetwork == NULL);
+
+	__asm
+	{
+		pushad
+
+		mov eax, btnOpenNumPlate_Ptr
+		mov dl, numplate_visibility
+		mov ebx, 0x4970E0
+		call ebx
+
+		mov eax, btnOpenNitroColor_Ptr
+		mov dl, numplate_visibility
+		mov ebx, 0x4970E0
+		call ebx
+
+		mov eax, lblNitroColorSelSubCap_Ptr
+		mov dl, nitrocolor_visibility
+		mov ebx, 0x4970E0
+		call ebx
+
+		mov eax, btnQuitNitroColorChange_Ptr
+		mov dl, nitrocolor_visibility
+		mov ebx, 0x4970E0
+		call ebx
+
+		mov eax, ds: [0x78EBF4]	// lblColorSelSubCap
+		mov dl, colorsel_visibility
+		mov ebx, 0x4970E0
+		call ebx
+
+		mov eax, ds: [0x78EBF8]	// btnQuitColorChange
+		mov dl, colorsel_visibility
+		mov ebx, 0x4970E0
+		call ebx
+
+		mov eax, btnOpenNumPlate_Ptr
+		mov dl, enabled_state
+		mov ebx, 0x497070
+		call ebx
+
+		popad
+	}
+}
+
 void XNumPlate()
 {
-	injector::MakeJMP(0x530CA4, LicensePlateBtn, true);
-	injector::MakeJMP(0x538F0F, LicensePlateBtn_Disable, true);
-	injector::MakeJMP(0x539981, LicensePlateBtn_Handler, true);
 	injector::MakeJMP(0x536D18, NumPlateElemsDeclr, true);
 	injector::MakeJMP(0x537D8C, a_NumPlate_MainFunc, true);
+	injector::MakeJMP(0x538820, ExtraCustomBtns_Handler, true);
+
+	//injector::MakeNOP(0x5DAC04, 5, true);
 }
