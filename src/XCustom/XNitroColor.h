@@ -72,7 +72,7 @@ static uint32_t FlameColor(uint32_t rgb, double lightness)
     return ((uint32_t)ToByte(r) << 16) | ((uint32_t)ToByte(g) << 8) | (uint32_t)ToByte(b);
 }
 
-static const int gColorSlots = 8;
+static const int gColorSlots = 32;
 
 struct ColorSlot
 {
@@ -376,7 +376,7 @@ static bool IsBot(uintptr_t car)
     if (!car || *(uintptr_t*)0x7CD0E0) return false;
     const uintptr_t players = *(uintptr_t*)0x78CEE0;
     const int count = *(uint8_t*)0x78CEDC;
-    if (!players || count < 1 || count > 8) return false;
+    if (!players || count < 1) return false;
     if (!gGame || *(const uint8_t*)gGame != 0) return false;
     for (int i = 0; i < count; ++i)
     {
@@ -541,18 +541,6 @@ static uint32_t TextureColor(uintptr_t flame)
 
     return color->color & 0xFFFFFFu;
 }
-
-
-//static uint32_t TextureColor(uintptr_t flame)
-//{
-//    if (gColorsOpen) return gColor & 0xFFFFFFu;
-//    if (!flame) return gPresets[0];
-//    const uintptr_t car = *(uintptr_t*)(flame + 0x930);
-//    const ColorSlot* color = FindColor(gCarColors, car);
-//    if (!color || color->random || (car != PlayerCar() && !IsPreviewCar(car)))
-//        return gPresets[0];
-//    return color->color & 0xFFFFFFu;
-//}
 
 static bool LoadTailTexture(const char* path, uintptr_t* image)
 {

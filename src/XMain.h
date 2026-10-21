@@ -14,6 +14,7 @@
 #include "XCustom/XDynParts.h"
 #include "XCustom/XCarinfo.h"
 #include "XCustom/XEntitiesList.h"
+#include "XCustom/XFlipFlop.h"
 
 using namespace std::chrono_literals;
 
@@ -21,7 +22,6 @@ namespace
 {
 	std::atomic<bool> g_running{ true };
 }
-
 
 void Init()
 {
@@ -45,12 +45,14 @@ void Init()
 
 	NitroColor_InstallHooks();
 
+	XFlipFlop();
+	XWheels();
+	XCarinfo();
+	XEntriesList();
+	XNumPlate();
+
 	while (g_running.load(std::memory_order_relaxed))
 	{
-		XNumPlate();
-		XWheels();
 		XDynParts();
-		XCarinfo();
-		XEntriesList();
 	}
 }
