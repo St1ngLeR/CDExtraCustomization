@@ -1,6 +1,14 @@
 #include "XCustom/XNitroColor.h"	// by Fixik
 
-#include "filesystem"
+#include <algorithm>
+#include <cstddef>
+#include <ranges>
+#include <string>
+#include <vector>
+#include <utility>
+#include <cstdarg>
+#include <cstdio>
+#include <cstring>
 
 const char* NumPlate_Key = "NUMPLATE";
 const char* group_numplate = "numplate";
@@ -47,7 +55,7 @@ std::string numplate_select_text;
 
 bool is_numplate_found;
 
-std::string sel_numplates_dir = "\\textures\\numplate\\";
+const char* sel_numplates_game_dir = "numplate";
 
 std::vector<std::string> sel_numplates_l = { "l_def.tga" };
 std::vector<std::string> sel_numplates_s = { "s_def.tga" };
@@ -612,6 +620,314 @@ void __declspec(naked) NumPlateElemsDeclr()
 	}
 }
 
+// Temporary diagnostics for native recursive enumeration. The log is written
+// beside Crashday.exe; this does not participate in file discovery.
+static void NumPlate_NativeLog(const char* format, ...)
+{
+    char exePath[MAX_PATH] = {};
+    const DWORD pathLength = GetModuleFileNameA(nullptr, exePath, MAX_PATH);
+    if (pathLength == 0 || pathLength >= MAX_PATH)
+        return;
+
+    char* separator = std::strrchr(exePath, '\\');
+    if (!separator)
+        separator = std::strrchr(exePath, '/');
+    if (!separator)
+        return;
+
+    *(separator + 1) = '\0';
+    char logPath[MAX_PATH] = {};
+    if (sprintf_s(logPath, sizeof(logPath), "%sXNumPlateNative.log", exePath) < 0)
+        return;
+
+    char line[1024] = {};
+    va_list args;
+    va_start(args, format);
+    const int count = vsnprintf_s(line, sizeof(line), _TRUNCATE, format, args);
+    va_end(args);
+    if (count < 0)
+        return;
+
+    const size_t lineLength = std::strlen(line);
+    if (lineLength + 2 >= sizeof(line))
+        return;
+    line[lineLength] = '\r';
+    line[lineLength + 1] = '\n';
+
+    HANDLE file = CreateFileA(logPath, FILE_APPEND_DATA,
+        FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (file == INVALID_HANDLE_VALUE)
+        return;
+
+    DWORD written = 0;
+    WriteFile(file, line, static_cast<DWORD>(lineLength + 2), &written, nullptr);
+    CloseHandle(file);
+}
+
+// Crashday 2006 native directory API.
+// The original number-plate menu in sub_51E730 uses this same iterator for
+// TEXTURES/numplate. Any installed virtual-filesystem overlay can participate
+// through the game's normal file-search calls; this plugin stays unaware of it.
+static __declspec(naked) void __cdecl NumPlate_GameStringInit(void*, const char*)
+{
+    __asm
+    {
+        push ebx
+        mov eax, [esp + 8]
+        mov edx, [esp + 0Ch]
+        mov ebx, 0FFFFFFFFh
+        push 069586Ch
+        call dword ptr [esp]
+        add esp, 4
+        pop ebx
+        ret
+    }
+}
+
+static __declspec(naked) void __cdecl NumPlate_GameStringDestroy(void*)
+{
+    __asm
+    {
+        push ebx
+        mov eax, [esp + 8]
+        xor edx, edx
+        push 06959C9h
+        call dword ptr [esp]
+        add esp, 4
+        pop ebx
+        ret
+    }
+}
+
+static __declspec(naked) void __cdecl NumPlate_GameSetSubdirectory(void*, void*)
+{
+    __asm
+    {
+        push ebx
+        mov ecx, [esp + 8]
+        mov eax, ecx
+        mov edx, [esp + 0Ch]
+        push 0672700h
+        call dword ptr [esp]
+        add esp, 4
+        pop ebx
+        ret
+    }
+}
+
+static __declspec(naked) void* __cdecl NumPlate_GameOpenDirectory(const char*)
+{
+    __asm
+    {
+        push ebx
+        mov eax, [esp + 8]
+        push 0696A88h
+        call dword ptr [esp]
+        add esp, 4
+        pop ebx
+        ret
+    }
+}
+
+static __declspec(naked) void* __cdecl NumPlate_GameNextDirectoryEntry(void*)
+{
+    __asm
+    {
+        push ebx
+        mov eax, [esp + 8]
+        push 0696A98h
+        call dword ptr [esp]
+        add esp, 4
+        pop ebx
+        ret
+    }
+}
+
+static __declspec(naked) void __cdecl NumPlate_GameCloseDirectory(void*)
+{
+    __asm
+    {
+        push ebx
+        mov eax, [esp + 8]
+        xor edx, edx
+        push 0696B48h
+        call dword ptr [esp]
+        add esp, 4
+        pop ebx
+        ret
+    }
+}
+
+static bool NumPlate_UseGameTextureDirectory()
+{
+    // dword_7E5FF0 is the CrashdayDirectory object used by the original game code.
+    void* gameDirectory = *reinterpret_cast<void**>(0x7E5FF0);
+    if (!gameDirectory)
+        return false;
+
+    // sub_69586C/sub_6959C9 construct and destroy the game's own string type.
+    alignas(4) unsigned char gamePath[0x40] = {};
+    NumPlate_GameStringInit(gamePath, "TEXTURES");
+    NumPlate_GameSetSubdirectory(gameDirectory, gamePath);
+    NumPlate_GameStringDestroy(gamePath);
+    return true;
+}
+
+struct NumPlateGameSubdirectory
+{
+    std::string gamePath;
+    std::string relativePath;
+};
+
+static void NumPlate_PushUnique(std::vector<std::string>& target, const std::string& value)
+{
+    const auto found = std::find_if(target.begin(), target.end(),
+        [&value](const std::string& current)
+        {
+            return _stricmp(current.c_str(), value.c_str()) == 0;
+        });
+
+    if (found == target.end())
+        target.push_back(value);
+}
+
+static void NumPlate_AddGameFile(const std::string& relativeDirectory, const std::string& fileName)
+{
+    const std::size_t extensionPos = fileName.find_last_of('.');
+    if (extensionPos == std::string::npos)
+        return;
+
+    const std::string extension = fileName.substr(extensionPos);
+    if (_stricmp(extension.c_str(), ".tga") != 0 &&
+        _stricmp(extension.c_str(), ".dds") != 0)
+        return;
+
+    const std::string stem = fileName.substr(0, extensionPos);
+    std::string result = relativeDirectory.empty()
+        ? fileName
+        : relativeDirectory + "/" + fileName;
+
+    const std::size_t resultExtensionPos = result.find_last_of('.');
+    result.replace(resultExtensionPos, std::string::npos, ".tga");
+    std::ranges::replace(result, '\\', '/');
+
+    if (stem.rfind("l_", 0) == 0 || stem.rfind("L_", 0) == 0)
+        NumPlate_PushUnique(sel_numplates_l, result);
+    else if (stem.rfind("s_", 0) == 0 || stem.rfind("S_", 0) == 0)
+        NumPlate_PushUnique(sel_numplates_s, result);
+    else if (stem.rfind("u_", 0) == 0 || stem.rfind("U_", 0) == 0)
+        NumPlate_PushUnique(sel_numplates_u, result);
+}
+
+static void NumPlate_EnumerateGameDirectoryRecursive(
+    const std::string& gamePath,
+    const std::string& relativePath,
+    unsigned int depth = 0)
+{
+    // Guard against malformed/cyclic directory trees.
+    if (depth > 32)
+    {
+        NumPlate_NativeLog("DEPTH-LIMIT depth=%u path=%s", depth, gamePath.c_str());
+        return;
+    }
+
+    // The game's other directory enumerators pass directory paths with a
+    // trailing separator (for example ../cars/ and ../tracks/). Keep the
+    // vanilla root argument unchanged, but terminate recursive child paths.
+    std::string openPath = gamePath;
+    if (depth != 0 && !openPath.empty() &&
+        openPath.back() != '/' && openPath.back() != '\\')
+        openPath.push_back('/');
+
+    NumPlate_NativeLog("OPEN depth=%u path=%s relative=%s",
+        depth, openPath.c_str(), relativePath.c_str());
+
+    void* directory = NumPlate_GameOpenDirectory(openPath.c_str());
+    if (!directory && openPath != gamePath)
+    {
+        // Some native directory calls accept a terminated path, others may
+        // require the caller's original form. Try both without changing the
+        // virtual directory context.
+        NumPlate_NativeLog("OPEN-RETRY depth=%u path=%s", depth, gamePath.c_str());
+        directory = NumPlate_GameOpenDirectory(gamePath.c_str());
+    }
+    if (!directory)
+    {
+        NumPlate_NativeLog("OPEN-FAILED depth=%u path=%s", depth, openPath.c_str());
+        return;
+    }
+
+    std::vector<NumPlateGameSubdirectory> subdirectories;
+    void* entry = nullptr;
+    unsigned int entryCount = 0;
+    unsigned int directoryCount = 0;
+    unsigned int textureCount = 0;
+
+    while ((entry = NumPlate_GameNextDirectoryEntry(directory)) != nullptr)
+    {
+        ++entryCount;
+        const BYTE* record = static_cast<const BYTE*>(entry);
+        const BYTE attributes = record[0x15];
+        const char* entryNamePtr = reinterpret_cast<const char*>(record + 0x1E);
+        if (!entryNamePtr || !entryNamePtr[0])
+        {
+            NumPlate_NativeLog("ENTRY-EMPTY depth=%u attr=%02X", depth, attributes);
+            continue;
+        }
+
+        const std::string entryName(entryNamePtr);
+        if (entryName == "." || entryName == "..")
+            continue;
+
+        const bool isDirectory = (attributes & 0x10) != 0;
+        NumPlate_NativeLog("ENTRY depth=%u path=%s name=%s attr=%02X directory=%u",
+            depth, openPath.c_str(), entryName.c_str(), attributes,
+            isDirectory ? 1u : 0u);
+
+        if (isDirectory)
+        {
+            ++directoryCount;
+            NumPlateGameSubdirectory child;
+            child.gamePath = gamePath;
+            if (!child.gamePath.empty() &&
+                child.gamePath.back() != '/' && child.gamePath.back() != '\\')
+                child.gamePath.push_back('/');
+            child.gamePath += entryName;
+            child.gamePath.push_back('/');
+            child.relativePath = relativePath.empty()
+                ? entryName
+                : relativePath + "/" + entryName;
+            subdirectories.push_back(std::move(child));
+            continue;
+        }
+
+        const std::size_t before = sel_numplates_l.size() +
+            sel_numplates_s.size() + sel_numplates_u.size();
+        NumPlate_AddGameFile(relativePath, entryName);
+        const std::size_t after = sel_numplates_l.size() +
+            sel_numplates_s.size() + sel_numplates_u.size();
+        if (after > before)
+        {
+            ++textureCount;
+            NumPlate_NativeLog("TEXTURE relative=%s/%s",
+                relativePath.c_str(), entryName.c_str());
+        }
+    }
+
+    NumPlate_GameCloseDirectory(directory);
+    NumPlate_NativeLog("CLOSE depth=%u path=%s entries=%u dirs=%u textures=%u",
+        depth, openPath.c_str(), entryCount, directoryCount, textureCount);
+
+    for (const auto& child : subdirectories)
+    {
+        NumPlate_NativeLog("RECURSE parent=%s child=%s relative=%s",
+            openPath.c_str(), child.gamePath.c_str(), child.relativePath.c_str());
+        NumPlate_EnumerateGameDirectoryRecursive(
+            child.gamePath, child.relativePath, depth + 1);
+    }
+}
+
 void NumPlate_MainFunc()
 {
 	if (GetGarageColorType())
@@ -625,37 +941,27 @@ void NumPlate_MainFunc()
 
 	curcar = injector::ReadMemory<short>(0x78ED16, true);
 
-	if (!CDDir().empty())
+	// Use the same native virtual-directory lookup as the original game:
+	// set TEXTURES, then enumerate numplate through sub_696A88, sub_696A98, and sub_696B48.
+	// No physical paths or external loader settings are accessed.
+	if (*reinterpret_cast<void**>(0x7E5FF0) != nullptr)
 	{
 		if (getnumplates == false)
 		{
-			for (const auto& entry : std::filesystem::recursive_directory_iterator(CDDir() + sel_numplates_dir))
+			if (NumPlate_UseGameTextureDirectory())
 			{
-				if (entry.is_regular_file())
-				{
-					std::filesystem::path relative = std::filesystem::relative(entry.path(), CDDir() + sel_numplates_dir);
-					std::string filename = relative.filename().stem().string();
-					std::string extension = relative.extension().string();
-					std::string result = relative.replace_extension(".tga").string();
-					std::ranges::replace(result, '\\', '/');
-					if ((extension == ".tga") || (extension == ".dds"))
-					{
-						if (filename.rfind("l_", 0) == 0)
-						{
-							sel_numplates_l.push_back(result);
-						}
-						else if (filename.rfind("s_", 0) == 0)
-						{
-							sel_numplates_s.push_back(result);
-						}
-						else if (filename.rfind("u_", 0) == 0)
-						{
-							sel_numplates_u.push_back(result);
-						}
-					}
-				}
+				NumPlate_NativeLog("BEGIN root=TEXTURES/%s", sel_numplates_game_dir);
+				NumPlate_EnumerateGameDirectoryRecursive(sel_numplates_game_dir, "");
+				NumPlate_NativeLog("DONE plates L=%u S=%u U=%u",
+					static_cast<unsigned>(sel_numplates_l.size()),
+					static_cast<unsigned>(sel_numplates_s.size()),
+					static_cast<unsigned>(sel_numplates_u.size()));
+				getnumplates = true;
 			}
-			getnumplates = true;
+			else
+			{
+				NumPlate_NativeLog("ERROR TEXTURES virtual directory is null");
+			}
 		}
 		if (getnumplates == true)
 		{

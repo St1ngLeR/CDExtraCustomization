@@ -148,69 +148,444 @@ static bool CarFolder(uintptr_t car, char* output, uint32_t size)
     return true;
 }
 
-static bool ColorPath(uintptr_t car, char path[260])
+// Nitro colors are stored per savegame, with each savegame name written once
+// followed by its car-folder/color pairs. The database lives beside this ASI.
+// The grouped v1 format is the only supported format:
+// header -> [saveNameLength, carCount, saveName,
+//   (carFolderLength, carFolder, uint32 RGB) * carCount] * saveCount.
+// Files with any other signature or version are rejected.
+static const uint32_t gNitroDbVersion = 1;
+static const char gNitroDbMagic[8] = { 'N', 'I', 'T', 'R', 'O', 'C', 'O', 'L' };
+static uint8_t gNitroDbModuleAnchor = 0;
+
+struct NitroDbEntry
 {
-    char folder[128] = { 0 };
-    if (!CarFolder(car, folder, sizeof(folder))) return false;
-    return _snprintf_s(path, 260, _TRUNCATE, "../trkdata/cars/%s/nitrocol.cfg", folder) >= 0;
+    char saveName[260];
+    char carFolder[128];
+    uint32_t color;
+};
+
+// The table grows geometrically as records are added; there is no fixed
+// entry ceiling. The on-disk counters are uint32_t, matching the in-memory
+// count and allowing up to UINT32_MAX entries, subject to available memory.
+static NitroDbEntry* gNitroDbEntries = NULL;
+static uint32_t gNitroDbCount = 0;
+static uint32_t gNitroDbCapacity = 0;
+static bool gNitroDbLoaded = false;
+
+#pragma pack(push, 1)
+struct NitroDbHeader
+{
+    char magic[8];
+    uint32_t version;
+    uint32_t count; // Number of savegame groups.
+};
+
+struct NitroDbSaveHeader
+{
+    uint16_t saveNameLength;
+    uint32_t carCount;
+};
+
+struct NitroDbCarHeader
+{
+    uint16_t carFolderLength;
+};
+#pragma pack(pop)
+
+static bool ReserveNitroDbEntries(uint32_t required)
+{
+    if (required <= gNitroDbCapacity)
+        return true;
+
+    uint32_t newCapacity = gNitroDbCapacity ? gNitroDbCapacity : 32u;
+    while (newCapacity < required)
+    {
+        if (newCapacity > 0x7FFFFFFFu)
+        {
+            newCapacity = required;
+            break;
+        }
+        newCapacity *= 2u;
+    }
+
+    const size_t maxSize = (size_t)-1;
+    if ((size_t)newCapacity > maxSize / sizeof(NitroDbEntry))
+        return false;
+
+    HANDLE heap = GetProcessHeap();
+    if (!heap)
+        return false;
+
+    const size_t bytes = (size_t)newCapacity * sizeof(NitroDbEntry);
+    void* memory = gNitroDbEntries
+        ? HeapReAlloc(heap, HEAP_ZERO_MEMORY, gNitroDbEntries, bytes)
+        : HeapAlloc(heap, HEAP_ZERO_MEMORY, bytes);
+    if (!memory)
+        return false;
+
+    gNitroDbEntries = (NitroDbEntry*)memory;
+    gNitroDbCapacity = newCapacity;
+    return true;
 }
 
-static bool ReadColor(const char* text, uint32_t size, uint32_t* color)
+static void ClearNitroDbEntries()
 {
-    uint32_t pos = 0;
-    while (pos < size && text[pos] && strchr(" \t\r\n", text[pos])) ++pos;
-    if (pos < size && text[pos] == '#') ++pos;
-    if (size - pos < 6) return false;
-    char digits[7] = { 0 };
-    memcpy(digits, text + pos, 6);
-    if (strspn(digits, "0123456789abcdefABCDEF") != 6) return false;
-    pos += 6;
-    while (pos < size)
-    {
-        if (text[pos] && !strchr(" \t\r\n", text[pos])) return false;
-        ++pos;
-    }
-    *color = (uint32_t)strtoul(digits, NULL, 16);
+    if (gNitroDbEntries)
+        HeapFree(GetProcessHeap(), 0, gNitroDbEntries);
+    gNitroDbEntries = NULL;
+    gNitroDbCount = 0;
+    gNitroDbCapacity = 0;
+}
+
+static bool CurrentSaveName(char* output, uint32_t size)
+{
+    if (!output || size < 2) return false;
+
+    const uintptr_t profile = *(const uintptr_t*)0x7EA2CC;
+    if (!profile) return false;
+
+    // In sub_692FC0 Crashday copies the selected *.sav GameText into
+    // (profile + 0x14) before publishing the profile through dword_7EA2CC.
+    const GameText* saveName = (const GameText*)(profile + 0x14);
+    const char* text = TextData(saveName);
+    if (!text || !saveName->length || saveName->length >= size ||
+        saveName->length > 259)
+        return false;
+
+    memcpy(output, text, saveName->length);
+    output[saveName->length] = 0;
     return true;
+}
+
+static bool NitroDbPath(char path[MAX_PATH])
+{
+    if (!path) return false;
+
+    HMODULE module = NULL;
+    if (!GetModuleHandleExA(
+        GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+        GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+        (LPCSTR)&gNitroDbModuleAnchor, &module))
+        return false;
+
+    char modulePath[MAX_PATH] = {};
+    const DWORD length = GetModuleFileNameA(module, modulePath, MAX_PATH);
+    if (!length || length >= MAX_PATH) return false;
+
+    char* slash = strrchr(modulePath, '\\');
+    char* forwardSlash = strrchr(modulePath, '/');
+    if (!slash || (forwardSlash && forwardSlash > slash)) slash = forwardSlash;
+    if (!slash) return false;
+
+    const size_t directoryLength = (size_t)(slash - modulePath) + 1;
+    return _snprintf_s(path, MAX_PATH, _TRUNCATE,
+        "%.*snitrocol.dbs", (int)directoryLength, modulePath) >= 0;
+}
+
+static NitroDbEntry* FindNitroDbEntry(const char* saveName, const char* carFolder)
+{
+    if (!saveName || !carFolder) return NULL;
+
+    for (uint32_t i = 0; i < gNitroDbCount; ++i)
+    {
+        NitroDbEntry* entry = &gNitroDbEntries[i];
+        if (_stricmp(entry->saveName, saveName) == 0 &&
+            _stricmp(entry->carFolder, carFolder) == 0)
+            return entry;
+    }
+    return NULL;
+}
+
+static bool AddNitroDbEntry(const char* saveName, const char* carFolder,
+    uint32_t color)
+{
+    if (!saveName || !saveName[0] || !carFolder || !carFolder[0])
+        return false;
+
+    NitroDbEntry* entry = FindNitroDbEntry(saveName, carFolder);
+    if (!entry)
+    {
+        if (gNitroDbCount == 0xFFFFFFFFu ||
+            !ReserveNitroDbEntries(gNitroDbCount + 1u))
+            return false;
+
+        entry = &gNitroDbEntries[gNitroDbCount++];
+        memset(entry, 0, sizeof(*entry));
+        strncpy_s(entry->saveName, sizeof(entry->saveName), saveName, _TRUNCATE);
+        strncpy_s(entry->carFolder, sizeof(entry->carFolder), carFolder, _TRUNCATE);
+    }
+
+    entry->color = color & 0xFFFFFFu;
+    return true;
+}
+
+static bool WriteNitroDb();
+
+static bool ReadNitroDb()
+{
+    char path[MAX_PATH] = {};
+    if (!NitroDbPath(path)) return false;
+
+    FILE* file = fopen(path, "rb");
+    if (!file)
+    {
+        ClearNitroDbEntries();
+        return true; // A missing database is a new, empty dictionary.
+    }
+
+    ClearNitroDbEntries();
+
+    NitroDbHeader header = {};
+    bool valid = fread(&header, sizeof(header), 1, file) == 1 &&
+        memcmp(header.magic, gNitroDbMagic, sizeof(gNitroDbMagic)) == 0 &&
+        header.version == gNitroDbVersion;
+
+    // Only this grouped v1 format is accepted. Unsupported headers are rejected.
+    for (uint32_t group = 0; valid && group < header.count; ++group)
+    {
+        NitroDbSaveHeader saveHeader = {};
+        if (fread(&saveHeader, sizeof(saveHeader), 1, file) != 1 ||
+            saveHeader.saveNameLength == 0 ||
+            saveHeader.saveNameLength >= sizeof(((NitroDbEntry*)0)->saveName) ||
+            saveHeader.carCount == 0)
+        {
+            valid = false;
+            break;
+        }
+
+        char saveName[260] = {};
+        if (fread(saveName, 1, saveHeader.saveNameLength, file) !=
+                saveHeader.saveNameLength ||
+            memchr(saveName, 0, saveHeader.saveNameLength) != NULL)
+        {
+            valid = false;
+            break;
+        }
+        saveName[saveHeader.saveNameLength] = 0;
+
+        for (uint32_t car = 0; valid && car < saveHeader.carCount; ++car)
+        {
+            NitroDbCarHeader carHeader = {};
+            if (fread(&carHeader, sizeof(carHeader), 1, file) != 1 ||
+                carHeader.carFolderLength == 0 ||
+                carHeader.carFolderLength >= sizeof(((NitroDbEntry*)0)->carFolder))
+            {
+                valid = false;
+                break;
+            }
+
+            char carFolder[128] = {};
+            uint32_t color = 0;
+            if (fread(carFolder, 1, carHeader.carFolderLength, file) !=
+                    carHeader.carFolderLength ||
+                fread(&color, sizeof(color), 1, file) != 1 ||
+                memchr(carFolder, 0, carHeader.carFolderLength) != NULL)
+            {
+                valid = false;
+                break;
+            }
+
+            carFolder[carHeader.carFolderLength] = 0;
+            if (!AddNitroDbEntry(saveName, carFolder, color))
+            {
+                valid = false;
+                break;
+            }
+        }
+    }
+
+    // Reject truncated/extended files rather than silently accepting a partial
+    // dictionary. EOF is expected immediately after the last color DWORD.
+    if (valid && fgetc(file) != EOF)
+        valid = false;
+    if (ferror(file))
+        valid = false;
+
+    fclose(file);
+    if (!valid)
+    {
+        ClearNitroDbEntries();
+        return false;
+    }
+
+    return true;
+}
+
+static bool WriteNitroDb()
+{
+    char path[MAX_PATH] = {};
+    if (!NitroDbPath(path)) return false;
+
+    char tempPath[MAX_PATH] = {};
+    if (_snprintf_s(tempPath, sizeof(tempPath), _TRUNCATE,
+        "%s.tmp", path) < 0)
+        return false;
+
+    // Count distinct savegame names. The in-memory table remains flat for fast
+    // lookups, while the on-disk dictionary stores each save name only once.
+    uint32_t saveCount = 0;
+    for (uint32_t i = 0; i < gNitroDbCount; ++i)
+    {
+        bool firstOccurrence = true;
+        for (uint32_t previous = 0; previous < i; ++previous)
+        {
+            if (_stricmp(gNitroDbEntries[previous].saveName,
+                gNitroDbEntries[i].saveName) == 0)
+            {
+                firstOccurrence = false;
+                break;
+            }
+        }
+        if (firstOccurrence) ++saveCount;
+    }
+
+    FILE* file = fopen(tempPath, "wb");
+    if (!file) return false;
+
+    NitroDbHeader header = {};
+    memcpy(header.magic, gNitroDbMagic, sizeof(gNitroDbMagic));
+    header.version = gNitroDbVersion;
+    header.count = saveCount;
+
+    bool ok = fwrite(&header, sizeof(header), 1, file) == 1;
+    for (uint32_t i = 0; ok && i < gNitroDbCount; ++i)
+    {
+        const NitroDbEntry& first = gNitroDbEntries[i];
+        bool firstOccurrence = true;
+        for (uint32_t previous = 0; previous < i; ++previous)
+        {
+            if (_stricmp(gNitroDbEntries[previous].saveName, first.saveName) == 0)
+            {
+                firstOccurrence = false;
+                break;
+            }
+        }
+        if (!firstOccurrence) continue;
+
+        const size_t saveNameLength = strlen(first.saveName);
+        uint32_t carCount = 0;
+        for (uint32_t j = i; j < gNitroDbCount; ++j)
+        {
+            if (_stricmp(gNitroDbEntries[j].saveName, first.saveName) == 0)
+            {
+                if (carCount == 0xFFFFFFFFu)
+                {
+                    ok = false;
+                    break;
+                }
+                ++carCount;
+            }
+        }
+
+        if (!ok || !saveNameLength ||
+            saveNameLength >= sizeof(first.saveName) || carCount == 0)
+        {
+            ok = false;
+            break;
+        }
+
+        NitroDbSaveHeader saveHeader = {};
+        saveHeader.saveNameLength = (uint16_t)saveNameLength;
+        saveHeader.carCount = carCount;
+        ok = fwrite(&saveHeader, sizeof(saveHeader), 1, file) == 1 &&
+            fwrite(first.saveName, 1, saveNameLength, file) == saveNameLength;
+
+        for (uint32_t j = i; ok && j < gNitroDbCount; ++j)
+        {
+            const NitroDbEntry& entry = gNitroDbEntries[j];
+            if (_stricmp(entry.saveName, first.saveName) != 0)
+                continue;
+
+            const size_t carFolderLength = strlen(entry.carFolder);
+            if (!carFolderLength || carFolderLength >= sizeof(entry.carFolder))
+            {
+                ok = false;
+                break;
+            }
+
+            NitroDbCarHeader carHeader = {};
+            carHeader.carFolderLength = (uint16_t)carFolderLength;
+            ok = fwrite(&carHeader, sizeof(carHeader), 1, file) == 1 &&
+                fwrite(entry.carFolder, 1, carFolderLength, file) == carFolderLength &&
+                fwrite(&entry.color, sizeof(entry.color), 1, file) == 1;
+        }
+    }
+
+    if (fclose(file) != 0) ok = false;
+    if (!ok)
+    {
+        DeleteFileA(tempPath);
+        return false;
+    }
+
+    if (!MoveFileExA(tempPath, path,
+        MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH))
+    {
+        DeleteFileA(tempPath);
+        return false;
+    }
+    return true;
+}
+
+static bool EnsureNitroDbLoaded()
+{
+    if (!gNitroDbLoaded)
+    {
+        gNitroDbLoaded = true;
+        ReadNitroDb();
+    }
+    return true;
+}
+
+static void InitializeNitroDb()
+{
+    EnsureNitroDbLoaded();
+
+    char path[MAX_PATH] = {};
+    if (NitroDbPath(path) && GetFileAttributesA(path) == INVALID_FILE_ATTRIBUTES)
+        WriteNitroDb(); // Create an empty, valid dictionary beside the ASI.
 }
 
 static bool SaveColor(uintptr_t car, uint32_t color)
 {
-    char path[260] = { 0 };
-    if (!ColorPath(car, path)) return false;
-    FILE* file = fopen(path, "wb");
-    if (!file) return false;
-    char text[7] = { 0 };
-    _snprintf_s(text, sizeof(text), _TRUNCATE, "%06X", color & 0xFFFFFFu);
-    const bool ok = fwrite(text, 1, 6, file) == 6;
-    return fclose(file) == 0 && ok;
+    if (!car) return false;
+
+    char saveName[260] = {};
+    char carFolder[128] = {};
+    if (!CurrentSaveName(saveName, sizeof(saveName)) ||
+        !CarFolder(car, carFolder, sizeof(carFolder)))
+        return false;
+
+    EnsureNitroDbLoaded();
+    if (!AddNitroDbEntry(saveName, carFolder, color))
+        return false;
+
+    return WriteNitroDb();
 }
 
 static bool LoadColor(uintptr_t car, uint32_t* selected, uint32_t* render)
 {
     if (!car || !selected || !render) return false;
-    char path[260] = { 0 };
-    if (!ColorPath(car, path)) return false;
+
+    char saveName[260] = {};
+    char carFolder[128] = {};
+    if (!CurrentSaveName(saveName, sizeof(saveName)) ||
+        !CarFolder(car, carFolder, sizeof(carFolder)))
+        return false;
+
+    EnsureNitroDbLoaded();
     uint32_t color = gPresets[0];
-    bool valid = false;
-    FILE* file = fopen(path, "rb");
-    if (file)
-    {
-        char text[32] = { 0 };
-        const size_t size = fread(text, 1, sizeof(text) - 1, file);
-        if (!ferror(file)) valid = ReadColor(text, (uint32_t)size, &color);
-        fclose(file);
-    }
-    if (!valid)
-    {
-        color = gPresets[0];
-        SaveColor(car, color);
-    }
+    NitroDbEntry* entry = FindNitroDbEntry(saveName, carFolder);
+    if (entry)
+        color = entry->color & 0xFFFFFFu;
+    else
+        SaveColor(car, color); // Seed this savegame/car pair with the default.
+
     *selected = color;
     *render = Tint(color);
     return true;
 }
-
 static uint32_t GarageCar()
 {
     const uintptr_t controller = *(const uint32_t*)0x7BC998;
@@ -1440,5 +1815,6 @@ static bool NitroColor_InstallHooks()
 
     gColor &= 0xFFFFFF;
     gFlameColor = Tint(gColor);
+    InitializeNitroDb();
     return true;
 }

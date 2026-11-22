@@ -1,23 +1,69 @@
 BYTE max_meshes = 32;	// 16 - default
 
-void __declspec(naked) a_StartEngSoundFix()
+void __declspec(naked) a_RegisterEngineIgnitionSound()
 {
 	__asm
 	{
-		mov ebx, -1
-		mov edx, eax
-		mov eax, esp
+		pushad
+		sub esp, 0x420
+
+		lea edi, [esp]
+		mov esi, 0x6B482D
+
+	copy_ignition_prefix:
+		mov al, byte ptr [esi]
+		mov byte ptr [edi], al
+		inc esi
+		inc edi
+		test al, al
+		jnz copy_ignition_prefix
+		dec edi
+
+		mov eax, dword ptr [ebp+0x6A]
+		lea esi, [eax+0x1CC]
+
+	copy_ignition_name:
+		mov al, byte ptr [esi]
+		mov byte ptr [edi], al
+		inc esi
+		inc edi
+		test al, al
+		jnz copy_ignition_name
+
+		lea eax, [esp+0x400]
+		mov edx, esp
+		mov ebx, 0xFFFFFFFF
 		call sub_69586C
-		mov ecx, ds: [0x7DF0AC]
 
-		jmp loc_46D37C
+		mov ecx, dword ptr ds: [0x7DF0AC]
+		mov edx, eax
+		mov eax, ecx
+		xor ebx, ebx
+		call sub_6560D0
 
-	loc_46D37C:
-		push 0x46D37C
+		lea eax, [esp+400h]
+		xor edx, edx
+		mov ecx, 0xFFFFFFFF
+		call sub_6959C9
+
+		add esp, 420h
+		popad
+
+		mov eax, dword ptr [ebp+0x6A]
+		mov ebx, dword ptr [eax+0x1B8]
+		push 0x46CBBF
 		retn
 
 	sub_69586C:
 		push 0x69586C
+		retn
+
+	sub_6560D0:
+		push 0x6560D0
+		retn
+
+	sub_6959C9:
+		push 0x6959C9
 		retn
 	}
 }
@@ -538,7 +584,7 @@ void __declspec(naked) a_TorqueCrv()
 		lea eax, [esp + 0x210]
 		call sub_6959C9
 		test cl, cl
-		je aftbur_accel
+		je end
 
 		mov ebx, -1
 		mov edx, var_drive
@@ -573,38 +619,6 @@ void __declspec(naked) a_TorqueCrv()
 		xor edx, edx
 		call sub_6959C9
 					
-		// ============ aftbur_accel ============
-
-	aftbur_accel:
-		//mov ebx, -1
-		//mov edx, var_aftbur_accel
-		//lea eax, [esp + 0x210]
-		//call sub_69586C
-		//mov edx, eax
-		//lea eax, [esp + 0x20]
-		//call sub_676250
-		//test al, al
-		//setne cl
-		//xor edx, edx
-		//lea eax, [esp + 0x210]
-		//call sub_6959C9
-		//test cl, cl
-		//je end
-
-		//mov ebx, -1
-		//mov edx, var_aftbur_accel
-		//lea eax,[esp+0x50]
-		//call sub_69586C
-
-		//mov edx,eax
-		//lea eax,[esp+0x20]
-		//call sub_677960
-		//lea eax,[esp+0x50]
-		//xor edx,edx
-
-		//fstp dword ptr [eax+0x3E4]
-		//call sub_6959C9
-
 	end:
 		mov ebx, -1
 		jmp loc_464770
@@ -655,7 +669,9 @@ void XCarinfo()
 	injector::WriteMemory(0x44CD52, 0, true);	// hide fallback front flare
 	injector::WriteMemory<BYTE>(0x44C9E2, 0x74, true);	// hide fallback rear flare
 
-	//injector::MakeJMP(0x46D376, a_StartEngSoundFix, true);
+	injector::MakeNOP(0x46C26A, 5, true);
+
+	injector::MakeJMP(0x46CBB6, a_RegisterEngineIgnitionSound, true);
 	injector::WriteMemory(0x65610F, 0x78AC70, true);
 
 	injector::MakeJMP(0x46D73D, 0x46D585, true);	// use default torque curve values as a fallback if torque curve file doesn't exists
