@@ -12,6 +12,8 @@ Features
 - "Scrollable" tuning parts list
 - Customizable nitro color (like in Redline Edition)
 - More adjustable parameters for tunings
+- Flip-Flop decals support
+- Customizable engine ignition sound
 
 ## Install & usage
 To make ASI plugin work in the game you need to use [ThirteenAG's Ultimate ASI Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader) and put plugin files in to game directory or folders mentioned in ThirteenAG's loader GitHub page.
